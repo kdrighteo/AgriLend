@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; // Updated import syntax
-import API_BASE_URL from '../config/api';
 
-const API_URL = `${API_BASE_URL}/auth`;
+// API Configuration
+const API_URL = process.env.REACT_APP_API_URL || 'https://agrilend.onrender.com/api';
 
 // Token validation
 interface DecodedToken {
@@ -40,7 +40,7 @@ interface FarmerRegistrationData {
 
 // Register farmer
 export const register = async (farmerData: FarmerRegistrationData) => {
-  const response = await axios.post(`${API_URL}/register`, farmerData);
+  const response = await axios.post(`${API_URL}/auth/register`, farmerData);
   
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
@@ -52,7 +52,7 @@ export const register = async (farmerData: FarmerRegistrationData) => {
 
 // Login user
 export const login = async (email: string, password: string) => {
-  const response = await axios.post(`${API_URL}/login`, {
+  const response = await axios.post(`${API_URL}/auth/login`, {
     email,
     password
   });
