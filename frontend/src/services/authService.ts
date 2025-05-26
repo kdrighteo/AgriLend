@@ -1,6 +1,8 @@
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import API_BASE_URL from '../config/api';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = `${API_BASE_URL}/auth`;
 
 // Interface for farmer registration data
 interface FarmerRegistrationData {
