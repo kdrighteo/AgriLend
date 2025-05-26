@@ -18,7 +18,8 @@ app.use(cors({
     ? [
         process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app',
         'https://www.agrilend.com',
-        'https://agri-lend-bcgmz7nib-kdbfs-projects.vercel.app'
+        'https://agri-lend-bcgmz7nib-kdbfs-projects.vercel.app',
+        'https://agri-lend-om58fqoif-kdbfs-projects.vercel.app'
       ]
     : 'http://localhost:3000',
   credentials: true

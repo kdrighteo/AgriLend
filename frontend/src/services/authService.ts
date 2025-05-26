@@ -2,7 +2,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode'; // Updated import syntax
 
 // API Configuration
-const API_URL = process.env.REACT_APP_API_URL || 'https://agrilend.onrender.com/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://agrilend-1.onrender.com/api';
 
 // Token validation
 interface DecodedToken {

@@ -5,7 +5,7 @@ declare const process: {
   }
 };
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://agrilend.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://agrilend-1.onrender.com/api';
 
 // For debugging API connectivity issues
 console.log('Using API URL:', API_BASE_URL);
