@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const DebugInfo: React.FC = () => {
   const [userInfo, setUserInfo] = useState<any>(null);
@@ -95,7 +96,7 @@ const DebugInfo: React.FC = () => {
             const email = (document.getElementById('email') as HTMLInputElement).value;
             const password = (document.getElementById('password') as HTMLInputElement).value;
             
-            axios.post('http://localhost:5000/api/auth/login', { email, password })
+            axios.post(`${API_BASE_URL}/auth/login`, { email, password })
               .then(res => {
                 if (res.data.token) {
                   localStorage.setItem('token', res.data.token);

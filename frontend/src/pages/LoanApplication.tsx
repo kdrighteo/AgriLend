@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import '../styles/LoanApplication.css';
+import API_BASE_URL from '../config/api';
 
 interface LoanFormData {
   amount: string;
@@ -91,7 +92,7 @@ const LoanApplication: React.FC = () => {
       // Submit loan application
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/loans', 
+        `${API_BASE_URL}/loans`,
         loanData,
         {
           headers: {

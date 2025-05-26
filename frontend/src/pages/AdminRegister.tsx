@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Auth.css';
+import API_BASE_URL from '../config/api';
 
 const AdminRegister: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const AdminRegister: React.FC = () => {
         invitationCode
       };
       
-      const response = await axios.post('https://agrilend.onrender.com/api/auth/register-admin', registerData);
+      const response = await axios.post(`${API_BASE_URL}/auth/register-admin`, registerData);
       
       setIsLoading(false);
       

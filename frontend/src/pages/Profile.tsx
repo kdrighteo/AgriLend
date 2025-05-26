@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import '../styles/Profile.css';
+import API_BASE_URL from '../config/api';
 
 interface ProfileFormData {
   name: string;
@@ -44,7 +45,7 @@ const Profile: React.FC = () => {
     
     try {
       const response = await axios.put(
-        'http://localhost:5000/api/auth/profile', 
+        `${API_BASE_URL}/auth/profile`,
         formData,
         {
           headers: {

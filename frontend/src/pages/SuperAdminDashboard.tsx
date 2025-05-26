@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/Dashboard.css";
+import API_BASE_URL from '../config/api';
 
 interface Invitation {
   _id: string;
@@ -90,7 +91,7 @@ const SuperAdminDashboard: React.FC = () => {
       const token = localStorage.getItem("token");
       console.log('Fetching invitations with token:', token);
       const response = await axios.get(
-        "http://localhost:5000/api/invitations",
+        `${API_BASE_URL}/invitations`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -113,7 +114,7 @@ const SuperAdminDashboard: React.FC = () => {
       const token = localStorage.getItem("token");
       console.log('Fetching banks with token:', token);
       const response = await axios.get(
-        "http://localhost:5000/api/users/banks",
+        `${API_BASE_URL}/users/banks`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -135,7 +136,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       console.log('Fetching loans with token:', token);
-      const response = await axios.get("http://localhost:5000/api/loans", {
+      const response = await axios.get(`${API_BASE_URL}/loans`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -181,7 +182,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:5000/api/invitations",
+        `${API_BASE_URL}/invitations`,
         newInvitation,
         {
           headers: {
@@ -211,11 +212,14 @@ const SuperAdminDashboard: React.FC = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/invitations/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.delete(
+          `${API_BASE_URL}/invitations/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         // Update invitations list
         setInvitations(invitations.filter((inv) => inv._id !== id));
@@ -238,7 +242,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/loans/${selectedLoan}/assign`,
+        `${API_BASE_URL}/loans/${selectedLoan}/assign`,
         { bankId: selectedBank },
         {
           headers: {

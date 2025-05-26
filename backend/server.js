@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const path = require('path');
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
@@ -15,12 +16,7 @@ const app = express();
 // CORS Configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? [
-        process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app',
-        'https://www.agrilend.com',
-        'https://agri-lend-bcgmz7nib-kdbfs-projects.vercel.app',
-        'https://agri-lend-om58fqoif-kdbfs-projects.vercel.app'
-      ]
+    ? [process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app', 'https://www.agrilend.com']
     : 'http://localhost:3000',
   credentials: true
 }));
@@ -52,6 +48,14 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/loans", loanRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/users", userRoutes);
+
+// Serve static files from the React app (for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
