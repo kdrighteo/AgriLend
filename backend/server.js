@@ -15,7 +15,11 @@ const app = express();
 // CORS Configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app', 'https://www.agrilend.com']
+    ? [
+        process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app',
+        'https://www.agrilend.com',
+        'https://agri-lend-bcgmz7nib-kdbfs-projects.vercel.app'
+      ]
     : 'http://localhost:3000',
   credentials: true
 }));

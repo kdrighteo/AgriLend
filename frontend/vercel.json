@@ -1,15 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
   "routes": [
+    {
+      "src": "/manifest.json",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "Access-Control-Allow-Origin": "*"
+      },
+      "dest": "/manifest.json"
+    },
     {
       "src": "/static/(.*)",
       "dest": "/static/$1"
@@ -17,10 +16,6 @@
     {
       "src": "/favicon.ico",
       "dest": "/favicon.ico"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
     },
     {
       "src": "/asset-manifest.json",

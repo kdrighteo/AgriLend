@@ -1,5 +1,11 @@
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+declare const process: {
+  env: {
+    REACT_APP_API_URL?: string;
+  }
+};
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://agrilend.onrender.com/api';
 
 // For debugging API connectivity issues
 console.log('Using API URL:', API_BASE_URL);
