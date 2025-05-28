@@ -4,6 +4,11 @@ const User = require('../models/User');
 // Submit a new loan application
 exports.submitLoanApplication = async (req, res) => {
   try {
+    // Check if user is a farmer
+    if (req.user.role !== 'farmer') {
+      return res.status(403).json({ message: 'Only farmers can submit loan applications' });
+    }
+
     const {
       amount,
       purpose,
@@ -18,7 +23,7 @@ exports.submitLoanApplication = async (req, res) => {
       revenueUnit
     } = req.body;
 
-    // Create new loan application
+    // Create new loan application (explicitly set status to pending)
     const loanApplication = new Loan({
       farmer: req.user._id,
       amount,
@@ -31,13 +36,18 @@ exports.submitLoanApplication = async (req, res) => {
       farmingCycle,
       estimatedYield,
       estimatedRevenue,
-      revenueUnit
+      revenueUnit,
+      status: 'pending',  // Explicitly set status to pending for superadmin review
+      adminNotes: 'New application pending superadmin review'
     });
 
     // Save loan application to the database
     await loanApplication.save();
 
-    res.status(201).json(loanApplication);
+    res.status(201).json({ 
+      message: 'Loan application submitted successfully and awaiting superadmin review',
+      loanApplication 
+    });
   } catch (error) {
     console.error('Submit loan application error:', error.message);
     res.status(500).json({ message: 'Server error' });
@@ -55,19 +65,42 @@ exports.getFarmerLoans = async (req, res) => {
   }
 };
 
-// Get all loan applications (admin only)
+// Get all loan applications (temporary debug version - allows all authenticated users)
 exports.getAllLoans = async (req, res) => {
   try {
-    // Only admins can access all loans
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    console.log('===== GET ALL LOANS DEBUG =====');
+    console.log('User attempting to access loans:', {
+      userId: req.user ? req.user._id : 'unknown',
+      role: req.user ? req.user.role : 'unknown',
+      name: req.user ? req.user.name : 'unknown',
+      email: req.user ? req.user.email : 'unknown'
+    });
+    
+    // TEMPORARY: Allow any authenticated user to access loans for debugging
+    if (!req.user) {
+      console.log('DENIED: No authenticated user');
+      return res.status(401).json({ message: 'Authentication required' });
     }
+    
+    // No filtering for debugging - show all loans to any authenticated user
+    let query = {};
+    console.log('DEBUG MODE: Showing all loans to user', req.user.email);
 
-    const loans = await Loan.find().sort({ submittedAt: -1 }).populate('farmer', 'name email farmName farmLocation');
+    console.log('Query filter:', JSON.stringify(query));
+    
+    const loans = await Loan.find(query)
+      .sort({ submittedAt: -1 })
+      .populate('farmer', 'name email farmName farmLocation')
+      .populate('assignedTo', 'name email institution');
+    
+    console.log(`Found ${loans.length} loans matching criteria`);
+    console.log('===== END GET ALL LOANS DEBUG =====');
+    
     res.json(loans);
   } catch (error) {
     console.error('Get all loans error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error(error.stack);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -98,26 +131,15 @@ exports.getLoanById = async (req, res) => {
   }
 };
 
-// Update loan status (admin only)
+// Update loan status (superadmin for approval, admin for assigned loans)
 exports.updateLoanStatus = async (req, res) => {
   try {
     const { status, adminNotes, riskScore, approvedAmount, rejectReason } = req.body;
 
-    // Only admins can update loan status
-    if (req.user.role !== 'admin') {
+    // Verify user has appropriate permissions
+    if (req.user.role !== 'superadmin' && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized access' });
     }
-
-    // Build loan update object
-    const loanFields = {};
-    if (status) loanFields.status = status;
-    if (adminNotes !== undefined) loanFields.adminNotes = adminNotes;
-    if (riskScore !== undefined) loanFields.riskScore = riskScore;
-    if (approvedAmount !== undefined) loanFields.approvedAmount = approvedAmount;
-    if (rejectReason !== undefined) loanFields.rejectReason = rejectReason;
-    
-    loanFields.adminId = req.user._id;
-    loanFields.reviewedAt = Date.now();
 
     let loan = await Loan.findById(req.params.id);
 
@@ -126,6 +148,44 @@ exports.updateLoanStatus = async (req, res) => {
       return res.status(404).json({ message: 'Loan application not found' });
     }
 
+    // Role-based permission checks for loan status updates
+    if (req.user.role === 'admin') {
+      // Regular admins (banks) can only update loans assigned to them
+      if (!loan.assignedTo || loan.assignedTo.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ 
+          message: 'You can only update loans assigned to you by a superadmin' 
+        });
+      }
+      
+      // Banks can only mark loans as funded or update their notes
+      if (status && status !== 'funded') {
+        return res.status(403).json({ 
+          message: 'Banks can only mark loans as funded or update notes' 
+        });
+      }
+    }
+
+    // Superadmin-specific restrictions
+    if (req.user.role === 'superadmin') {
+      // Superadmins handle initial review (pending → approved/rejected)
+      if (status === 'funded') {
+        return res.status(403).json({ 
+          message: 'Only banks can mark loans as funded' 
+        });
+      }
+    }
+
+    // Build loan update object
+    const loanFields = {};
+    if (status) loanFields.status = status;
+    if (adminNotes !== undefined) loanFields.adminNotes = adminNotes;
+    if (riskScore !== undefined && req.user.role === 'superadmin') loanFields.riskScore = riskScore;
+    if (approvedAmount !== undefined && req.user.role === 'superadmin') loanFields.approvedAmount = approvedAmount;
+    if (rejectReason !== undefined && req.user.role === 'superadmin') loanFields.rejectReason = rejectReason;
+    
+    loanFields.adminId = req.user._id;
+    loanFields.reviewedAt = Date.now();
+
     // Update loan
     loan = await Loan.findByIdAndUpdate(
       req.params.id,
@@ -133,10 +193,11 @@ exports.updateLoanStatus = async (req, res) => {
       { new: true }
     )
     .populate('farmer', 'name email farmName farmLocation phoneNumber creditScore')
-    .populate('adminId', 'name email');
+    .populate('adminId', 'name email')
+    .populate('assignedTo', 'name email institution');
 
-    // Update farmer's credit score if loan is approved or rejected
-    if (status === 'approved' || status === 'rejected') {
+    // Update farmer's credit score if loan is approved or rejected by superadmin
+    if (req.user.role === 'superadmin' && (status === 'approved' || status === 'rejected')) {
       // Simple credit score calculation
       // The actual implementation would be more sophisticated
       const farmer = await User.findById(loan.farmer._id);

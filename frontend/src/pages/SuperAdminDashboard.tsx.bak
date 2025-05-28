@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/Dashboard.css";
-import API_BASE_URL from "../config/api";
 
 interface Invitation {
   _id: string;
@@ -41,7 +40,7 @@ interface Loan {
 }
 
 const SuperAdminDashboard: React.FC = () => {
-  console.log("SuperAdminDashboard component mounted");
+  console.log('SuperAdminDashboard component mounted');
   const navigate = useNavigate();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [banks, setBanks] = useState<Bank[]>([]);
@@ -53,7 +52,7 @@ const SuperAdminDashboard: React.FC = () => {
   });
   const [selectedLoan, setSelectedLoan] = useState<string>("");
   const [selectedBank, setSelectedBank] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"invitations" | "banks" | "loans">(
+  const [activeTab, setActiveTab] = useState<"invitations" | "banks" | "loans" | "approvals">(
     "invitations"
   );
   const [error, setError] = useState("");
@@ -63,43 +62,46 @@ const SuperAdminDashboard: React.FC = () => {
   useEffect(() => {
     // Check if user is superadmin
     const userStr = localStorage.getItem("user");
-    console.log("User from localStorage:", userStr);
+    console.log('User from localStorage:', userStr);
     if (userStr) {
       const userData = JSON.parse(userStr);
-      console.log("Parsed user data:", userData);
-      console.log("User role:", userData.role);
+      console.log('Parsed user data:', userData);
+      console.log('User role:', userData.role);
       if (userData.role !== "superadmin") {
-        console.log("User is not superadmin, redirecting to login");
+        console.log('User is not superadmin, redirecting to login');
         navigate("/login");
       } else {
-        console.log("User is superadmin, proceeding to dashboard");
+        console.log('User is superadmin, proceeding to dashboard');
       }
     } else {
-      console.log("No user in localStorage, redirecting to login");
+      console.log('No user in localStorage, redirecting to login');
       navigate("/login");
     }
 
-    // Load initial data
+    // Load all data
     fetchInvitations();
     fetchBanks();
-    getAllLoans();
+    fetchLoans();
   }, [navigate]);
 
   const fetchInvitations = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      console.log("Fetching invitations with token:", token);
-      const response = await axios.get(`${API_BASE_URL}/invitations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Invitations API response:", response.data);
+      console.log('Fetching invitations with token:', token);
+      const response = await axios.get(
+        "http://localhost:5000/api/invitations",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Invitations API response:', response.data);
       setInvitations(response.data);
       setLoading(false);
     } catch (err: any) {
-      console.error("Error fetching invitations:", err);
+      console.error('Error fetching invitations:', err);
       setError(err.response?.data?.message || "Error fetching invitations");
       setLoading(false);
     }
@@ -109,48 +111,61 @@ const SuperAdminDashboard: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      console.log("Fetching banks with token:", token);
-      const response = await axios.get(`${API_BASE_URL}/users/banks`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Banks API response:", response.data);
+      console.log('Fetching banks with token:', token);
+      const response = await axios.get(
+        "http://localhost:5000/api/users/banks",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Banks API response:', response.data);
       setBanks(response.data);
       setLoading(false);
     } catch (err: any) {
-      console.error("Error fetching banks:", err);
+      console.error('Error fetching banks:', err);
       setError(err.response?.data?.message || "Error fetching banks");
       setLoading(false);
     }
   };
 
-  const getAllLoans = async () => {
+  const fetchLoans = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      console.log("Fetching loans with token:", token);
-      const response = await axios.get("http://localhost:5000/api/loans", {
+      console.log('Fetching loans with token:', token);
+      
+      // FIX: Using the correct endpoint for fetching all loans
+      const response = await axios.get("http://localhost:5000/api/loans/all", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Loans API response:", response.data);
-      setLoans(response.data);
 
-      // Filter unassigned loans - include both pending and approved loans
-      const unassigned = response.data.filter(
-        (loan: Loan) =>
-          !loan.assignedTo &&
-          (loan.status === "pending" ||
-            loan.status.toLowerCase() === "approved")
+      console.log('Loans API response:', response.data);
+      const allLoans = response.data;
+      setLoans(allLoans);
+
+      // Filter unassigned loans
+      // Filter loans that need superadmin attention - include both pending (new) and approved (ready for bank assignment) loans
+      const unassigned = allLoans.filter(
+        (loan: Loan) => {
+          // Include all loans that:
+          // 1. Don't have a bank assignment yet AND
+          // 2. Either have 'pending' status (new submissions) OR 'approved' status (ready for bank assignment)
+          const needsAttention = !loan.assignedTo && 
+                               (loan.status === "pending" || 
+                                loan.status.toLowerCase() === "approved");
+          return needsAttention;
+        }
       );
-      console.log("Unassigned loans:", unassigned);
+      console.log('Unassigned loans:', unassigned);
       setUnassignedLoans(unassigned);
 
       setLoading(false);
     } catch (err: any) {
-      console.error("Error fetching loans:", err);
+      console.error('Error fetching loans:', err);
       setError(err.response?.data?.message || "Error fetching loans");
       setLoading(false);
     }
@@ -177,7 +192,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${API_BASE_URL}/invitations`,
+        "http://localhost:5000/api/invitations",
         newInvitation,
         {
           headers: {
@@ -207,7 +222,7 @@ const SuperAdminDashboard: React.FC = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        await axios.delete(`${API_BASE_URL}/invitations/${id}`, {
+        await axios.delete(`http://localhost:5000/api/invitations/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -224,6 +239,73 @@ const SuperAdminDashboard: React.FC = () => {
     }
   };
 
+  // Handle approving a loan application
+  const handleApproveLoan = async (loanId: string) => {
+    if (!loanId) {
+      setError("Invalid loan ID");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:5000/api/loans/${loanId}/status`,
+        { status: "approved", adminNotes: "Approved by superadmin" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh loans after approval
+      await fetchLoans();
+      setSuccess("Loan has been approved successfully");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Error approving loan");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle rejecting a loan application
+  const handleRejectLoan = async (loanId: string) => {
+    const reason = prompt("Please provide a reason for rejection:");
+    if (reason === null) return; // User canceled the prompt
+    
+    if (!loanId) {
+      setError("Invalid loan ID");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `http://localhost:5000/api/loans/${loanId}/status`,
+        { 
+          status: "rejected", 
+          adminNotes: "Rejected by superadmin",
+          rejectReason: reason
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh loans after rejection
+      await fetchLoans();
+      setSuccess("Loan has been rejected");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Error rejecting loan");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAssignLoan = async () => {
     if (!selectedLoan || !selectedBank) {
       setError("Please select both a loan and a bank");
@@ -234,7 +316,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       await axios.put(
-        `${API_BASE_URL}/loans/${selectedLoan}/assign`,
+        `http://localhost:5000/api/loans/${selectedLoan}/assign`,
         { bankId: selectedBank },
         {
           headers: {
@@ -244,7 +326,7 @@ const SuperAdminDashboard: React.FC = () => {
       );
 
       // Refresh loans list
-      getAllLoans();
+      fetchLoans();
       setSuccess("Loan assigned successfully");
       setSelectedLoan("");
       setSelectedBank("");
@@ -314,35 +396,56 @@ const SuperAdminDashboard: React.FC = () => {
           </p>
         </div>
       </div>
-
-      {/* Tab Navigation */}
-      <div className="tabs-container">
-        <button
-          className={`tab-button ${
-            activeTab === "invitations" ? "active" : ""
-          }`}
-          onClick={() => setActiveTab("invitations")}
-        >
-          Bank Invitations
-        </button>
-        <button
-          className={`tab-button ${activeTab === "banks" ? "active" : ""}`}
-          onClick={() => setActiveTab("banks")}
-        >
-          Registered Banks
-        </button>
-        <button
-          className={`tab-button ${activeTab === "loans" ? "active" : ""}`}
-          onClick={() => setActiveTab("loans")}
-        >
-          Loan Management
-        </button>
+      
+      {/* Dashboard Stats Section */}
+      <div className="stats-container">
+        <div className="stat-card">
+        <h3>Registered Banks</h3>
+        <p className="stat-value">{banks.length}</p>
       </div>
+      <div className="stat-card">
+        <h3>Total Loans</h3>
+        <p className="stat-value">{loans.length}</p>
+      </div>
+      <div className="stat-card">
+        <h3>Unassigned Loans</h3>
+        <p className="stat-value">{unassignedLoans.length}</p>
+      </div>
+      <div className="stat-card">
+        <h3>Active Invitations</h3>
+        <p className="stat-value">
+          {invitations.filter((inv) => !inv.used).length}
+        </p>
+      </div>
+    </div>
 
-      <div className="dashboard-content">
-        {/* Invitations Tab */}
-        {activeTab === "invitations" && (
-          <>
+    {/* Tab Navigation */}
+    <div className="dashboard-tabs">
+      <button
+        className={`tab ${activeTab === "invitations" ? "active" : ""}`}
+        onClick={() => setActiveTab("invitations")}
+      >
+        Invitations
+      </button>
+      <button
+        className={`tab ${activeTab === "banks" ? "active" : ""}`}
+        onClick={() => setActiveTab("banks")}
+      >
+        Banks
+      </button>
+      <button
+        className={`tab ${activeTab === "approvals" ? "active" : ""}`}
+        onClick={() => setActiveTab("approvals")}
+      >
+        Loan Approvals
+      </button>
+      <button
+        className={`tab ${activeTab === "loans" ? "active" : ""}`}
+        onClick={() => setActiveTab("loans")}
+      >
+        Loan Management
+      </button>
+    </div>
             {/* Create New Invitation Form */}
             <div className="dashboard-card">
               <h2>Create New Bank Invitation</h2>
@@ -466,6 +569,63 @@ const SuperAdminDashboard: React.FC = () => {
                       <td>{formatDate(bank.createdAt)}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+
+        {/* Loan Approvals Tab */}
+        {activeTab === "approvals" && (
+          <div className="dashboard-card">
+            <h2>Pending Loan Applications for Review</h2>
+            {loading && <p>Loading...</p>}
+            {!loading && loans.filter(loan => loan.status === "pending").length === 0 && (
+              <p>No pending loan applications to review</p>
+            )}
+            {!loading && loans.filter(loan => loan.status === "pending").length > 0 && (
+              <table className="invitations-table">
+                <thead>
+                  <tr>
+                    <th>Farmer</th>
+                    <th>Farm</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Submitted Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loans
+                    .filter(loan => loan.status === "pending")
+                    .map((loan) => (
+                      <tr key={loan._id}>
+                        <td>{loan.farmer.name}</td>
+                        <td>{loan.farmer.farmName || "N/A"}</td>
+                        <td>${loan.amount.toLocaleString()}</td>
+                        <td>{loan.purpose}</td>
+                        <td>{formatDate(loan.createdAt)}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <Link to={`/loans/${loan._id}`} className="btn-view">
+                              View Details
+                            </Link>
+                            <button
+                              onClick={() => handleApproveLoan(loan._id)}
+                              className="btn-approve"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleRejectLoan(loan._id)}
+                              className="btn-reject"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             )}

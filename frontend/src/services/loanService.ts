@@ -52,16 +52,34 @@ export const getFarmerLoans = async () => {
   return response.data;
 };
 
-// Get all loans (admin only)
+// Get all loans (admin and superadmin only)
 export const getAllLoans = async () => {
-  const token = localStorage.getItem('token');
-  const response = await axios.get(`${API_URL}/all`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('No authentication token found');
+      throw new Error('Authentication required');
     }
-  });
-  
-  return response.data;
+    
+    // Add debugging info for token
+    console.log('Using token for loans request (first 20 chars):', token.substring(0, 20) + '...');
+    
+    const response = await axios.get(`${API_URL}/all`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    console.log(`Retrieved ${response.data?.length || 0} loans`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching loans:', error);
+    // Rethrow with more context
+    if (axios.isAxiosError(error)) {
+      throw new Error(`Failed to fetch loans: ${error.response?.status} ${error.response?.statusText}. ${error.response?.data?.message || ''}`);
+    }
+    throw error;
+  }
 };
 
 // Get a specific loan by ID

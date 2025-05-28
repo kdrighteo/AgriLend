@@ -41,14 +41,36 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <>
                 {user?.role === 'superadmin' ? (
-                  <li>
-                    <Link 
-                      to="/super-admin-dashboard" 
-                      className={isActive('/super-admin-dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
-                    >
-                      Super Admin Dashboard
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link 
+                        to="/super-admin-dashboard" 
+                        className={isActive('/super-admin-dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
+                      >
+                        Super Admin Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/pending-loans" 
+                        className={isActive('/pending-loans') ? 'nav-link nav-link-active' : 'nav-link'}
+                        style={{ color: '#e74c3c', fontWeight: 'bold', position: 'relative' }}
+                      >
+                        Review Loan Applications
+                        <span style={{
+                          background: '#e74c3c',
+                          color: 'white',
+                          borderRadius: '50%',
+                          padding: '2px 6px',
+                          fontSize: '12px',
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-10px'
+                        }}>!</span>
+                      </Link>
+                    </li>
+                  </>
+                
                 ) : user?.role === 'admin' ? (
                   <li>
                     <Link 

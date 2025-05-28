@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriLend Loan Workflow Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+        .section {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .error {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .loan-item {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .status-approved {
+            background-color: #27ae60;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .status-rejected {
+            background-color: #c0392b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AgriLend Loan Workflow Test Tool</h1>
+    <p>This tool helps diagnose issues with loan submission and approval workflow.</p>
+    
+    <div class="section">
+        <h2>1. Farmer Login</h2>
+        <div class="form-group">
+            <label for="farmer-email">Email:</label>
+            <input type="email" id="farmer-email" value="john@farmer.com">
+        </div>
+        <div class="form-group">
+            <label for="farmer-password">Password:</label>
+            <input type="password" id="farmer-password" value="changeme123!">
+        </div>
+        <button onclick="loginAsFarmer()">Login as Farmer</button>
+        <div id="farmer-login-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Submit Loan Application</h2>
+        <div class="form-group">
+            <label for="loan-amount">Loan Amount:</label>
+            <input type="number" id="loan-amount" value="5000">
+        </div>
+        <div class="form-group">
+            <label for="loan-purpose">Purpose:</label>
+            <input type="text" id="loan-purpose" value="Purchase new tractor">
+        </div>
+        <div class="form-group">
+            <label for="loan-description">Description:</label>
+            <textarea id="loan-description">Need to replace old equipment for the upcoming season.</textarea>
+        </div>
+        <div class="form-group">
+            <label for="loan-term">Term Length (months):</label>
+            <input type="number" id="loan-term" value="12">
+        </div>
+        <div class="form-group">
+            <label for="loan-crop">Crop Type:</label>
+            <input type="text" id="loan-crop" value="Corn">
+        </div>
+        <button onclick="submitLoan()" id="submit-loan-btn" disabled>Submit Loan Application</button>
+        <div id="loan-submit-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Superadmin Login</h2>
+        <div class="form-group">
+            <label for="admin-email">Email:</label>
+            <input type="email" id="admin-email" value="superadmin@agrilend.com">
+        </div>
+        <div class="form-group">
+            <label for="admin-password">Password:</label>
+            <input type="password" id="admin-password" value="changeme123!">
+        </div>
+        <button onclick="loginAsSuperadmin()">Login as Superadmin</button>
+        <div id="admin-login-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>4. Check Loan Visibility</h2>
+        <p>Verifies if the submitted loan appears in the superadmin's loan list.</p>
+        <button onclick="checkLoanVisibility()" id="check-visibility-btn" disabled>Check Loan Visibility</button>
+        <div id="visibility-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>5. View All Loans</h2>
+        <button onclick="getAllLoans()">Get All Loans</button>
+        <div id="all-loans-result"></div>
+        <div id="loans-container"></div>
+    </div>
+
+    <script>
+        // Store tokens and current loan ID
+        let farmerToken = localStorage.getItem('farmerToken') || null;
+        let adminToken = localStorage.getItem('adminToken') || null;
+        let currentLoanId = localStorage.getItem('currentLoanId') || null;
+        const API_URL = 'http://localhost:5000/api';
+        
+        // Update button states based on login status
+        function updateButtonStates() {
+            document.getElementById('submit-loan-btn').disabled = !farmerToken;
+            document.getElementById('check-visibility-btn').disabled = !adminToken || !currentLoanId;
+            
+            // Display current loan ID if available
+            if (currentLoanId) {
+                document.getElementById('loan-submit-result').innerHTML = 
+                    `<p class="success">Current loan ID: ${currentLoanId}</p>`;
+            }
+        }
+        
+        // Login as farmer
+        async function loginAsFarmer() {
+            const email = document.getElementById('farmer-email').value;
+            const password = document.getElementById('farmer-password').value;
+            const resultElement = document.getElementById('farmer-login-result');
+            
+            resultElement.innerHTML = '<p>Logging in...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    farmerToken = data.token;
+                    localStorage.setItem('farmerToken', farmerToken);
+                    resultElement.innerHTML = `<p class="success">Login successful! Token received.</p>`;
+                    updateButtonStates();
+                } else {
+                    resultElement.innerHTML = `<p class="error">Login failed: ${data.message}</p>`;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Submit loan application
+        async function submitLoan() {
+            const amount = document.getElementById('loan-amount').value;
+            const purpose = document.getElementById('loan-purpose').value;
+            const description = document.getElementById('loan-description').value;
+            const termLength = document.getElementById('loan-term').value;
+            const cropType = document.getElementById('loan-crop').value;
+            const resultElement = document.getElementById('loan-submit-result');
+            
+            const loanData = {
+                amount: Number(amount),
+                purpose,
+                description,
+                termLength: Number(termLength),
+                termUnit: 'months',
+                cropType,
+                farmingCycle: 'seasonal'
+            };
+            
+            resultElement.innerHTML = '<p>Submitting loan application...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/loans`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${farmerToken}`
+                    },
+                    body: JSON.stringify(loanData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentLoanId = data.loanApplication._id;
+                    localStorage.setItem('currentLoanId', currentLoanId);
+                    resultElement.innerHTML = `
+                        <p class="success">Loan application submitted successfully!</p>
+                        <p>Loan ID: ${currentLoanId}</p>
+                        <p>Status: ${data.loanApplication.status}</p>
+                    `;
+                    updateButtonStates();
+                } else {
+                    resultElement.innerHTML = `<p class="error">Submission failed: ${data.message}</p>`;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Login as superadmin
+        async function loginAsSuperadmin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const resultElement = document.getElementById('admin-login-result');
+            
+            resultElement.innerHTML = '<p>Logging in...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    adminToken = data.token;
+                    localStorage.setItem('adminToken', adminToken);
+                    resultElement.innerHTML = `<p class="success">Login successful! Token received.</p>`;
+                    updateButtonStates();
+                } else {
+                    resultElement.innerHTML = `<p class="error">Login failed: ${data.message}</p>`;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Check if the submitted loan is visible to superadmin
+        async function checkLoanVisibility() {
+            if (!currentLoanId || !adminToken) {
+                document.getElementById('visibility-result').innerHTML = 
+                    '<p class="error">Missing loan ID or admin token. Please submit a loan and login as admin.</p>';
+                return;
+            }
+            
+            const resultElement = document.getElementById('visibility-result');
+            resultElement.innerHTML = '<p>Checking loan visibility...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/loans/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                const loans = await response.json();
+                
+                if (response.ok) {
+                    // Check if our loan is in the list
+                    const foundLoan = loans.find(loan => loan._id === currentLoanId);
+                    
+                    if (foundLoan) {
+                        resultElement.innerHTML = `
+                            <p class="success">✅ SUCCESS: Loan is visible to superadmin!</p>
+                            <p>Loan details:</p>
+                            <pre>${JSON.stringify(foundLoan, null, 2)}</pre>
+                        `;
+                    } else {
+                        resultElement.innerHTML = `
+                            <p class="error">❌ FAILURE: Loan is NOT visible to superadmin!</p>
+                            <p>Total loans found: ${loans.length}</p>
+                            <p>Please check the backend controllers and filtering logic.</p>
+                        `;
+                    }
+                } else {
+                    resultElement.innerHTML = `<p class="error">Error: ${loans.message}</p>`;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Get all loans
+        async function getAllLoans() {
+            if (!adminToken) {
+                document.getElementById('all-loans-result').innerHTML = 
+                    '<p class="error">Please login as admin first.</p>';
+                return;
+            }
+            
+            const resultElement = document.getElementById('all-loans-result');
+            const loansContainer = document.getElementById('loans-container');
+            
+            resultElement.innerHTML = '<p>Fetching all loans...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/loans/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+                
+                const loans = await response.json();
+                
+                if (response.ok) {
+                    resultElement.innerHTML = `<p class="success">Found ${loans.length} loans</p>`;
+                    
+                    // Display loans
+                    loansContainer.innerHTML = '';
+                    loans.forEach(loan => {
+                        const loanElement = document.createElement('div');
+                        loanElement.className = 'loan-item';
+                        loanElement.innerHTML = `
+                            <h3>Loan ID: ${loan._id}</h3>
+                            <p><strong>Farmer:</strong> ${loan.farmer.name || 'Unknown'}</p>
+                            <p><strong>Amount:</strong> $${loan.amount.toLocaleString()}</p>
+                            <p><strong>Purpose:</strong> ${loan.purpose}</p>
+                            <p><strong>Status:</strong> <span class="status-${loan.status.toLowerCase()}">${loan.status}</span></p>
+                            <p><strong>Submitted:</strong> ${new Date(loan.createdAt).toLocaleString()}</p>
+                        `;
+                        loansContainer.appendChild(loanElement);
+                    });
+                } else {
+                    resultElement.innerHTML = `<p class="error">Error: ${loans.message}</p>`;
+                }
+            } catch (error) {
+                resultElement.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Initialize
+        updateButtonStates();
+    </script>
+</body>
+</html>
