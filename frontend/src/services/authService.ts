@@ -1,5 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode"; // Updated import syntax
+// src/services/authService.ts
+import { API_BASE_URL } from "../config/api";
 
 const API_URL = `${API_BASE_URL}/auth`;
 
@@ -39,7 +41,7 @@ interface FarmerRegistrationData {
 
 // Register farmer
 export const register = async (farmerData: FarmerRegistrationData) => {
-  const response = await axios.post(`${API_URL}/auth/register`, farmerData);
+  const response = await axios.post(`${API_URL}/register`, farmerData);
 
   if (response.data.token) {
     localStorage.setItem("token", response.data.token);
@@ -120,7 +122,7 @@ export const setupAxiosInterceptors = () => {
     (error) => {
       console.error("Request interceptor error:", error);
       return Promise.reject(error);
-    }
+    },
   );
 
   // Add a response interceptor to handle auth errors
@@ -130,7 +132,7 @@ export const setupAxiosInterceptors = () => {
       console.error(
         "API Error:",
         error?.response?.status,
-        error?.response?.data
+        error?.response?.data,
       );
 
       if (error.response) {
@@ -149,7 +151,7 @@ export const setupAxiosInterceptors = () => {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   console.log("Axios interceptors successfully set up");
