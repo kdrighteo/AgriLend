@@ -40,6 +40,23 @@ interface Loan {
   assignedTo?: string;
 }
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  institution?: string;
+  position?: string;
+  phoneNumber?: string;
+  farmName?: string;
+  farmLocation?: string;
+  farmSize?: number;
+  farmingExperience?: number;
+  mainCrops?: string[];
+  creditScore?: number;
+  createdAt: string;
+}
+
 const SuperAdminDashboard: React.FC = () => {
   console.log("SuperAdminDashboard component mounted");
   const navigate = useNavigate();
@@ -47,15 +64,16 @@ const SuperAdminDashboard: React.FC = () => {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
   const [unassignedLoans, setUnassignedLoans] = useState<Loan[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [newInvitation, setNewInvitation] = useState({
     email: "",
     institutionName: "",
   });
   const [selectedLoan, setSelectedLoan] = useState<string>("");
   const [selectedBank, setSelectedBank] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<"invitations" | "banks" | "loans">(
-    "invitations"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "invitations" | "banks" | "loans" | "users"
+  >("invitations");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -83,6 +101,7 @@ const SuperAdminDashboard: React.FC = () => {
     fetchInvitations();
     fetchBanks();
     getAllLoans();
+    fetchAllUsers();
   }, [navigate]);
 
   const fetchInvitations = async () => {
@@ -130,7 +149,7 @@ const SuperAdminDashboard: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       console.log("Fetching loans with token:", token);
-      const response = await axios.get("http://localhost:5000/api/loans", {
+      const response = await axios.get(`${API_BASE_URL}/loans/all`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -143,7 +162,7 @@ const SuperAdminDashboard: React.FC = () => {
         (loan: Loan) =>
           !loan.assignedTo &&
           (loan.status === "pending" ||
-            loan.status.toLowerCase() === "approved")
+            loan.status.toLowerCase() === "approved"),
       );
       console.log("Unassigned loans:", unassigned);
       setUnassignedLoans(unassigned);
@@ -152,6 +171,26 @@ const SuperAdminDashboard: React.FC = () => {
     } catch (err: any) {
       console.error("Error fetching loans:", err);
       setError(err.response?.data?.message || "Error fetching loans");
+      setLoading(false);
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      console.log("Fetching all users with token:", token);
+      const response = await axios.get(`${API_BASE_URL}/users/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Users API response:", response.data);
+      setUsers(response.data);
+      setLoading(false);
+    } catch (err: any) {
+      console.error("Error fetching users:", err);
+      setError(err.response?.data?.message || "Error fetching users");
       setLoading(false);
     }
   };
@@ -183,7 +222,7 @@ const SuperAdminDashboard: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       // Reset form
@@ -240,7 +279,7 @@ const SuperAdminDashboard: React.FC = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       // Refresh loans list
@@ -261,6 +300,50 @@ const SuperAdminDashboard: React.FC = () => {
 
   const handleLoanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLoan(e.target.value);
+  };
+
+  const handleApproveLoan = async (loanId: string) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${API_BASE_URL}/loans/${loanId}/status`,
+        { status: "approved" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      getAllLoans();
+      setSuccess("Loan approved successfully");
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Error approving loan");
+      setLoading(false);
+    }
+  };
+
+  const handleRejectLoan = async (loanId: string) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${API_BASE_URL}/loans/${loanId}/status`,
+        { status: "rejected" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      getAllLoans();
+      setSuccess("Loan rejected successfully");
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Error rejecting loan");
+      setLoading(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -330,6 +413,12 @@ const SuperAdminDashboard: React.FC = () => {
           onClick={() => setActiveTab("banks")}
         >
           Registered Banks
+        </button>
+        <button
+          className={`tab-button ${activeTab === "users" ? "active" : ""}`}
+          onClick={() => setActiveTab("users")}
+        >
+          All Users
         </button>
         <button
           className={`tab-button ${activeTab === "loans" ? "active" : ""}`}
@@ -472,6 +561,60 @@ const SuperAdminDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Users Tab */}
+        {activeTab === "users" && (
+          <div className="dashboard-card">
+            <h2>All Registered Users</h2>
+            {loading && <p>Loading...</p>}
+            {!loading && users.length === 0 && <p>No users registered yet</p>}
+            {!loading && users.length > 0 && (
+              <table className="invitations-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Institution/Farm</th>
+                    <th>Phone</th>
+                    <th>Credit Score</th>
+                    <th>Registered On</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user._id}>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>
+                        <span
+                          className={`status ${
+                            user.role === "superadmin"
+                              ? "active"
+                              : user.role === "admin"
+                                ? "pending"
+                                : ""
+                          }`}
+                        >
+                          {user.role.charAt(0).toUpperCase() +
+                            user.role.slice(1)}
+                        </span>
+                      </td>
+                      <td>
+                        {user.role === "farmer"
+                          ? user.farmName || "N/A"
+                          : user.institution || "N/A"}
+                      </td>
+                      <td>{user.phoneNumber || "N/A"}</td>
+                      <td>{user.creditScore || "N/A"}</td>
+                      <td>{formatDate(user.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+
         {/* Loans Tab */}
         {activeTab === "loans" && (
           <>
@@ -557,8 +700,8 @@ const SuperAdminDashboard: React.FC = () => {
                               loan.status === "approved"
                                 ? "active"
                                 : loan.status === "rejected"
-                                ? "rejected"
-                                : ""
+                                  ? "rejected"
+                                  : ""
                             }`}
                           >
                             {loan.status.charAt(0).toUpperCase() +
@@ -575,6 +718,24 @@ const SuperAdminDashboard: React.FC = () => {
                           <Link to={`/loans/${loan._id}`} className="btn-view">
                             View Details
                           </Link>
+                          {loan.status === "pending" && (
+                            <>
+                              <button
+                                onClick={() => handleApproveLoan(loan._id)}
+                                className="btn-approve"
+                                disabled={loading}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => handleRejectLoan(loan._id)}
+                                className="btn-reject"
+                                disabled={loading}
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     ))}
