@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode"; // Updated import syntax
 // src/services/authService.ts
-import { API_BASE_URL } from "../config/api";
+import API_BASE_URL from "../config/api";
 
 const API_URL = `${API_BASE_URL}/auth`;
 
