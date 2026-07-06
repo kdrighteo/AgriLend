@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import './Header.css';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import "./Header.css";
 
 const Header: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  
+
   // Function to check if a link is active
   const isActive = (path: string) => location.pathname === path;
-  
+
   // Function to toggle mobile menu
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
@@ -20,9 +20,11 @@ const Header: React.FC = () => {
         <div className="logo-container">
           <Link to="/" className="logo-link">
             <div className="logo-box">
-              <span className="logo-letter">M</span>
+              <span className="logo-letter">🌱</span>
             </div>
-            <span className="logo-text">MERN<span className="logo-colored">Stack</span></span>
+            <span className="logo-text">
+              Agric<span className="logo-colored">Lend</span>
+            </span>
           </Link>
         </div>
 
@@ -30,70 +32,68 @@ const Header: React.FC = () => {
         <nav className="desktop-nav">
           <ul className="nav-list">
             <li>
-              <Link 
-                to="/" 
-                className={isActive('/') ? 'nav-link nav-link-active' : 'nav-link'}
+              <Link
+                to="/"
+                className={
+                  isActive("/") ? "nav-link nav-link-active" : "nav-link"
+                }
               >
                 Home
               </Link>
             </li>
-            
+
             {isAuthenticated ? (
               <>
-                {user?.role === 'superadmin' ? (
+                {user?.role === "superadmin" ? (
                   <>
                     <li>
-                      <Link 
-                        to="/super-admin-dashboard" 
-                        className={isActive('/super-admin-dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
+                      <Link
+                        to="/super-admin-dashboard"
+                        className={
+                          isActive("/super-admin-dashboard")
+                            ? "nav-link nav-link-active"
+                            : "nav-link"
+                        }
                       >
-                        Super Admin Dashboard
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/pending-loans" 
-                        className={isActive('/pending-loans') ? 'nav-link nav-link-active' : 'nav-link'}
-                        style={{ color: '#e74c3c', fontWeight: 'bold', position: 'relative' }}
-                      >
-                        Review Loan Applications
-                        <span style={{
-                          background: '#e74c3c',
-                          color: 'white',
-                          borderRadius: '50%',
-                          padding: '2px 6px',
-                          fontSize: '12px',
-                          position: 'absolute',
-                          top: '-5px',
-                          right: '-10px'
-                        }}>!</span>
+                        Dashboard
                       </Link>
                     </li>
                   </>
-                
-                ) : user?.role === 'admin' ? (
+                ) : user?.role === "admin" ? (
                   <li>
-                    <Link 
-                      to="/admin-dashboard" 
-                      className={isActive('/admin-dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
+                    <Link
+                      to="/admin-dashboard"
+                      className={
+                        isActive("/admin-dashboard")
+                          ? "nav-link nav-link-active"
+                          : "nav-link"
+                      }
                     >
-                      Admin Dashboard
+                      Dashboard
                     </Link>
                   </li>
-                ) : user?.role === 'farmer' ? (
+                ) : user?.role === "farmer" ? (
                   <>
                     <li>
-                      <Link 
-                        to="/farmer-dashboard" 
-                        className={isActive('/farmer-dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
+                      <Link
+                        to="/farmer-dashboard"
+                        className={
+                          isActive("/farmer-dashboard")
+                            ? "nav-link nav-link-active"
+                            : "nav-link"
+                        }
                       >
-                        Farmer Dashboard
+                        Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link 
-                        to="/loan-application" 
-                        className={isActive('/loan-application') ? 'nav-link nav-link-active' : 'nav-link'}
+                      <Link
+                        to="/loan-application"
+                        className={
+                          isActive("/loan-application")
+                            ? "nav-link nav-link-active"
+                            : "nav-link"
+                        }
                       >
                         Apply for Loan
                       </Link>
@@ -101,9 +101,13 @@ const Header: React.FC = () => {
                   </>
                 ) : (
                   <li>
-                    <Link 
-                      to="/dashboard" 
-                      className={isActive('/dashboard') ? 'nav-link nav-link-active' : 'nav-link'}
+                    <Link
+                      to="/dashboard"
+                      className={
+                        isActive("/dashboard")
+                          ? "nav-link nav-link-active"
+                          : "nav-link"
+                      }
                     >
                       Dashboard
                     </Link>
@@ -112,34 +116,29 @@ const Header: React.FC = () => {
 
                 <li className="dropdown">
                   <button className="dropdown-button">
-                    <span>{user?.name || 'Account'}</span>
-                    <svg fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                    <span>{user?.name || "Account"}</span>
+                    <svg
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </button>
                   <div className="dropdown-menu">
-                    <Link
-                      to="/profile"
-                      className="dropdown-item"
-                    >
+                    <Link to="/profile" className="dropdown-item">
                       Edit Profile
                     </Link>
-                    <Link
-                      to="/change-password"
-                      className="dropdown-item"
-                    >
+                    <Link to="/change-password" className="dropdown-item">
                       Change Password
                     </Link>
-                    <Link
-                      to="/settings"
-                      className="dropdown-item"
-                    >
+                    <Link to="/settings" className="dropdown-item">
                       Settings
                     </Link>
-                    <button
-                      onClick={logout}
-                      className="dropdown-signout"
-                    >
+                    <button onClick={logout} className="dropdown-signout">
                       Sign out
                     </button>
                   </div>
@@ -148,18 +147,19 @@ const Header: React.FC = () => {
             ) : (
               <>
                 <li>
-                  <Link 
-                    to="/login" 
-                    className={isActive('/login') ? 'nav-link nav-link-active' : 'nav-link'}
+                  <Link
+                    to="/login"
+                    className={
+                      isActive("/login")
+                        ? "nav-link nav-link-active"
+                        : "nav-link"
+                    }
                   >
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/register" 
-                    className="signup-button"
-                  >
+                  <Link to="/register" className="signup-button">
                     Sign Up
                   </Link>
                 </li>
@@ -175,11 +175,25 @@ const Header: React.FC = () => {
           aria-label="Toggle menu"
         >
           {!mobileMenuOpen ? (
-            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path d="M4 6h16M4 12h16m-7 6h7"></path>
             </svg>
           ) : (
-            <svg fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           )}
@@ -191,42 +205,58 @@ const Header: React.FC = () => {
         <div className="mobile-menu">
           <ul className="mobile-nav-list">
             <li>
-              <Link 
-                to="/" 
-                className={isActive('/') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+              <Link
+                to="/"
+                className={
+                  isActive("/")
+                    ? "mobile-nav-link mobile-nav-link-active"
+                    : "mobile-nav-link"
+                }
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
             </li>
-            
+
             {isAuthenticated ? (
               <>
-                {user?.role === 'admin' ? (
+                {user?.role === "admin" ? (
                   <li>
-                    <Link 
-                      to="/dashboard" 
-                      className={isActive('/dashboard') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                    <Link
+                      to="/dashboard"
+                      className={
+                        isActive("/dashboard")
+                          ? "mobile-nav-link mobile-nav-link-active"
+                          : "mobile-nav-link"
+                      }
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Admin Dashboard
+                      Dashboard
                     </Link>
                   </li>
-                ) : user?.role === 'farmer' ? (
+                ) : user?.role === "farmer" ? (
                   <>
                     <li>
-                      <Link 
-                        to="/farmer-dashboard" 
-                        className={isActive('/farmer-dashboard') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                      <Link
+                        to="/farmer-dashboard"
+                        className={
+                          isActive("/farmer-dashboard")
+                            ? "mobile-nav-link mobile-nav-link-active"
+                            : "mobile-nav-link"
+                        }
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        Farmer Dashboard
+                        Dashboard
                       </Link>
                     </li>
                     <li>
-                      <Link 
-                        to="/loan-application" 
-                        className={isActive('/loan-application') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                      <Link
+                        to="/loan-application"
+                        className={
+                          isActive("/loan-application")
+                            ? "mobile-nav-link mobile-nav-link-active"
+                            : "mobile-nav-link"
+                        }
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Apply for Loan
@@ -235,9 +265,13 @@ const Header: React.FC = () => {
                   </>
                 ) : (
                   <li>
-                    <Link 
-                      to="/dashboard" 
-                      className={isActive('/dashboard') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                    <Link
+                      to="/dashboard"
+                      className={
+                        isActive("/dashboard")
+                          ? "mobile-nav-link mobile-nav-link-active"
+                          : "mobile-nav-link"
+                      }
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Dashboard
@@ -245,17 +279,21 @@ const Header: React.FC = () => {
                   </li>
                 )}
                 <li>
-                  <Link 
-                    to="/tasks" 
-                    className={isActive('/tasks') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                  <Link
+                    to="/tasks"
+                    className={
+                      isActive("/tasks")
+                        ? "mobile-nav-link mobile-nav-link-active"
+                        : "mobile-nav-link"
+                    }
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Tasks
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/profile" 
+                  <Link
+                    to="/profile"
                     className="mobile-nav-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -263,8 +301,8 @@ const Header: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/change-password" 
+                  <Link
+                    to="/change-password"
                     className="mobile-nav-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -272,8 +310,8 @@ const Header: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/settings" 
+                  <Link
+                    to="/settings"
                     className="mobile-nav-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -281,7 +319,7 @@ const Header: React.FC = () => {
                   </Link>
                 </li>
                 <li>
-                  <button 
+                  <button
                     onClick={() => {
                       logout();
                       setMobileMenuOpen(false);
@@ -295,17 +333,21 @@ const Header: React.FC = () => {
             ) : (
               <>
                 <li>
-                  <Link 
-                    to="/login" 
-                    className={isActive('/login') ? 'mobile-nav-link mobile-nav-link-active' : 'mobile-nav-link'}
+                  <Link
+                    to="/login"
+                    className={
+                      isActive("/login")
+                        ? "mobile-nav-link mobile-nav-link-active"
+                        : "mobile-nav-link"
+                    }
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Login
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/register" 
+                  <Link
+                    to="/register"
                     className="signup-button"
                     onClick={() => setMobileMenuOpen(false)}
                   >
