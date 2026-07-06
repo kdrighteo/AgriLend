@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import '../styles/Home.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import "../styles/Home.css";
 
 const Home: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
@@ -14,11 +14,13 @@ const Home: React.FC = () => {
           <div className="nav-logo">AgriLend</div>
           <div className="nav-links">
             {isAuthenticated ? (
-              <Link 
-                to={user?.role === 'admin' ? '/dashboard' : '/farmer-dashboard'} 
+              <Link
+                to={user?.role === "admin" ? "/dashboard" : "/farmer-dashboard"}
                 className="nav-link"
               >
-                {user?.role === 'admin' ? 'Admin Dashboard' : 'Farmer Dashboard'}
+                {user?.role === "admin"
+                  ? "Admin Dashboard"
+                  : "Farmer Dashboard"}
               </Link>
             ) : (
               <>
@@ -43,18 +45,24 @@ const Home: React.FC = () => {
               <span>for Farmers</span>
             </h1>
             <p className="hero-text">
-              Access affordable financing tailored for your farm's needs. Quick approvals and flexible terms designed for agricultural cycles.
+              Access affordable financing tailored for your farm's needs. Quick
+              approvals and flexible terms designed for agricultural cycles.
             </p>
             <div className="hero-buttons">
-              <Link to="/debug" className="nav-button" style={{marginRight: '10px'}}>
-                Debug Page
-              </Link>
               {isAuthenticated ? (
-                <Link 
-                  to={user?.role === 'admin' ? '/dashboard' : (user?.role === 'superadmin' ? '/super-admin-dashboard' : '/farmer-dashboard')} 
+                <Link
+                  to={
+                    user?.role === "admin"
+                      ? "/dashboard"
+                      : user?.role === "superadmin"
+                        ? "/super-admin-dashboard"
+                        : "/farmer-dashboard"
+                  }
                   className="btn-primary"
                 >
-                  {user?.role === 'admin' ? 'Review Loan Applications' : 'Apply for Financing'}
+                  {user?.role === "admin"
+                    ? "Review Loan Applications"
+                    : "Apply for Financing"}
                 </Link>
               ) : (
                 <>
@@ -72,12 +80,11 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="hero-image">
-            <div className="image-placeholder">
-              <div className="placeholder-content">
-                <div className="placeholder-title">Agricultural Financing</div>
-                <p className="placeholder-text">Supporting farmers with capital when they need it most</p>
-              </div>
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1628352087335-4f2a5b1c4c5e?w=800&h=600&fit=crop"
+              alt="Farmer in field"
+              className="hero-img"
+            />
           </div>
         </div>
       </div>
@@ -86,41 +93,205 @@ const Home: React.FC = () => {
       <div className="features-section">
         <div className="features-container">
           <div className="features-header">
-            <h2 className="features-heading">Financing Solutions for Farmers</h2>
+            <h2 className="features-heading">Why Choose AgricLend?</h2>
             <p className="features-intro">
-              Our lending platform is designed specifically for agricultural needs, with features that understand farming cycles.
+              Our platform connects farmers with financial institutions to
+              provide accessible, transparent, and timely agricultural
+              financing.
             </p>
           </div>
-          
+
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-number">
-                <span>01</span>
-              </div>
-              <h3 className="feature-title">Quick Application Process</h3>
+              <div className="feature-icon">🚜</div>
+              <h3 className="feature-title">Farm-Focused Lending</h3>
               <p className="feature-description">
-                Simple online application with minimal documentation. Get approved within days, not weeks.
+                Loans designed specifically for agricultural needs - from
+                equipment to seeds, we understand farming cycles.
               </p>
             </div>
-            
+
             <div className="feature-card">
-              <div className="feature-number">
-                <span>02</span>
-              </div>
-              <h3 className="feature-title">Seasonal Repayment Options</h3>
+              <div className="feature-icon">⚡</div>
+              <h3 className="feature-title">Fast Approvals</h3>
               <p className="feature-description">
-                Flexible repayment schedules aligned with harvest cycles and seasonal cash flow patterns.
+                Get decisions within days, not weeks. Our streamlined process
+                respects your time and seasonal needs.
               </p>
             </div>
-            
+
             <div className="feature-card">
-              <div className="feature-number">
-                <span>03</span>
-              </div>
-              <h3 className="feature-title">Competitive Interest Rates</h3>
+              <div className="feature-icon">📊</div>
+              <h3 className="feature-title">Credit Building</h3>
               <p className="feature-description">
-                Fair and transparent pricing with rates designed specifically for agricultural businesses.
+                Build your agricultural credit score with each successful loan,
+                unlocking better rates for future financing.
               </p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">🏦</div>
+              <h3 className="feature-title">Trusted Partners</h3>
+              <p className="feature-description">
+                Work with established financial institutions that understand and
+                support the agricultural sector.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">📱</div>
+              <h3 className="feature-title">Easy Management</h3>
+              <p className="feature-description">
+                Track applications, view loan status, and manage repayments all
+                from one convenient dashboard.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">🌱</div>
+              <h3 className="feature-title">Sustainable Growth</h3>
+              <p className="feature-description">
+                Support for sustainable farming practices and long-term
+                agricultural development.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works section */}
+      <div className="how-it-works-section">
+        <div className="how-it-works-container">
+          <div className="section-header">
+            <h2 className="section-heading">How It Works</h2>
+            <p className="section-intro">
+              Getting agricultural financing has never been easier. Follow these
+              simple steps to access the capital your farm needs.
+            </p>
+          </div>
+
+          <div className="steps-container">
+            <div className="step-item">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <h3 className="step-title">Create Your Profile</h3>
+                <p className="step-description">
+                  Register as a farmer and complete your farm profile with
+                  details about your operation, crops, and experience.
+                </p>
+              </div>
+            </div>
+
+            <div className="step-item">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <h3 className="step-title">Apply for Financing</h3>
+                <p className="step-description">
+                  Submit a loan application with your funding needs, purpose,
+                  and repayment timeline preferences.
+                </p>
+              </div>
+            </div>
+
+            <div className="step-item">
+              <div className="step-number">3</div>
+              <div className="step-content">
+                <h3 className="step-title">Get Matched</h3>
+                <p className="step-description">
+                  Our platform matches your application with suitable financial
+                  institutions based on your profile and needs.
+                </p>
+              </div>
+            </div>
+
+            <div className="step-item">
+              <div className="step-number">4</div>
+              <div className="step-content">
+                <h3 className="step-title">Receive Funding</h3>
+                <p className="step-description">
+                  Once approved, receive your funds directly and start growing
+                  your agricultural business.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats section */}
+      <div className="stats-section">
+        <div className="stats-container">
+          <div className="stat-item">
+            <div className="stat-number">$10M+</div>
+            <div className="stat-label">Loans Funded</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number">5,000+</div>
+            <div className="stat-label">Farmers Supported</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number">50+</div>
+            <div className="stat-label">Partner Banks</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number">98%</div>
+            <div className="stat-label">Satisfaction Rate</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonials section */}
+      <div className="testimonials-section">
+        <div className="testimonials-container">
+          <div className="section-header">
+            <h2 className="section-heading">What Farmers Say</h2>
+            <p className="section-intro">
+              Hear from farmers who have transformed their operations with
+              AgricLend financing.
+            </p>
+          </div>
+
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "AgricLend helped me purchase new equipment just before
+                  planting season. The process was quick and the terms were
+                  perfect for my cash flow."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">John Mbeki</div>
+                  <div className="author-farm">Green Valley Farm, Kenya</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "As a young farmer, getting traditional financing was
+                  impossible. AgricLend understood my potential and gave me the
+                  chance to grow."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">Sarah Osei</div>
+                  <div className="author-farm">Sunrise Acres, Ghana</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "The seasonal repayment option is a game-changer. I can focus
+                  on my harvest without worrying about monthly payments during
+                  lean periods."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">Emmanuel Adebayo</div>
+                  <div className="author-farm">Golden Harvest, Nigeria</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -131,18 +302,25 @@ const Home: React.FC = () => {
         <div className="cta-container">
           <h2 className="cta-heading">Ready to Grow Your Farm?</h2>
           <p className="cta-text">
-            Join farmers across the country who have accessed over $10 million in agricultural financing through our platform.
+            Join farmers across the country who have accessed over $10 million
+            in agricultural financing through our platform.
           </p>
           <div className="cta-button-container">
-            <Link 
-              to={isAuthenticated ? 
-                  (user?.role === 'admin' ? '/dashboard' : '/loan-application') : 
-                  '/register'} 
+            <Link
+              to={
+                isAuthenticated
+                  ? user?.role === "admin"
+                    ? "/dashboard"
+                    : "/loan-application"
+                  : "/register"
+              }
               className="cta-button"
             >
-              {isAuthenticated ? 
-                (user?.role === 'admin' ? 'Review Applications' : 'Apply for Loan') : 
-                'Get Started Today'}
+              {isAuthenticated
+                ? user?.role === "admin"
+                  ? "Review Applications"
+                  : "Apply for Loan"
+                : "Get Started Today"}
             </Link>
           </div>
         </div>
@@ -155,36 +333,57 @@ const Home: React.FC = () => {
             <div className="footer-brand">
               <h3>AgriLend</h3>
               <p>
-                Agricultural financing solutions designed to support farmers and agricultural businesses.
+                Agricultural financing solutions designed to support farmers and
+                agricultural businesses.
               </p>
             </div>
             <div className="footer-links">
               <h4>Loan Products</h4>
               <ul>
-                <li><a href="#">Equipment Financing</a></li>
-                <li><a href="#">Crop Loans</a></li>
-                <li><a href="#">Land Purchase</a></li>
+                <li>
+                  <a href="#">Equipment Financing</a>
+                </li>
+                <li>
+                  <a href="#">Crop Loans</a>
+                </li>
+                <li>
+                  <a href="#">Land Purchase</a>
+                </li>
               </ul>
             </div>
             <div className="footer-links">
               <h4>Resources</h4>
               <ul>
-                <li><a href="#">Farming Tips</a></li>
-                <li><a href="#">Success Stories</a></li>
-                <li><a href="#">FAQ</a></li>
+                <li>
+                  <a href="#">Farming Tips</a>
+                </li>
+                <li>
+                  <a href="#">Success Stories</a>
+                </li>
+                <li>
+                  <a href="#">FAQ</a>
+                </li>
               </ul>
             </div>
             <div className="footer-links">
               <h4>Contact</h4>
               <ul>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Branches</a></li>
-                <li><a href="#">Partnership</a></li>
+                <li>
+                  <a href="#">Support</a>
+                </li>
+                <li>
+                  <a href="#">Branches</a>
+                </li>
+                <li>
+                  <a href="#">Partnership</a>
+                </li>
               </ul>
             </div>
           </div>
           <div className="footer-copyright">
-            <p>&copy; {new Date().getFullYear()} AgriLend. All rights reserved.</p>
+            <p>
+              &copy; {new Date().getFullYear()} AgriLend. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
