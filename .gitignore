@@ -39,3 +39,6 @@ tmp/
 temp/
 node_modules
 .vercel
+
+# MongoDB data
+backend/data/
