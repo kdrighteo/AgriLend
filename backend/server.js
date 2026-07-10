@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const path = require('path');
+const path = require("path");
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
@@ -14,12 +14,28 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 
 // CORS Configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL || 'https://agrilend-frontend.vercel.app', 'https://www.agrilend.com']
-    : 'http://localhost:3000',
-  credentials: true
-}));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://agri-lend.vercel.app",
+  "https://agrilend-frontend.vercel.app",
+  "https://www.agrilend.com",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 // Middleware
 app.use(express.json());
@@ -50,10 +66,10 @@ app.use("/api/invitations", invitationRoutes);
 app.use("/api/users", userRoutes);
 
 // Serve static files from the React app (for production)
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
   });
 }
 
