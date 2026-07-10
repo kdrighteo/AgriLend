@@ -358,8 +358,8 @@ const SuperAdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
+    <div className="super-admin-container">
+      <div className="super-admin-header">
         <h1>Super Admin Dashboard</h1>
         <p>Manage banks, loans, and platform operations</p>
       </div>
