@@ -29,12 +29,14 @@
   font-size: 1rem;
   resize: vertical;
   min-height: 100px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.2);
   outline: none;
 }
 
@@ -49,12 +51,14 @@
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.2);
   outline: none;
 }
 
@@ -81,7 +85,9 @@
   background-color: white;
   cursor: pointer;
   position: relative;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .form-checkbox:checked {
@@ -90,7 +96,7 @@
 }
 
 .form-checkbox:checked::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0.2rem;
   left: 0.35rem;

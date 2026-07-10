@@ -45,7 +45,9 @@
   border-radius: 0.5rem;
   padding: 1.25rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .stat-card:hover {
@@ -240,8 +242,8 @@
 }
 
 .status-badge-pending {
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: #fef9c3;
+  color: #854d0e;
 }
 
 .status-badge-review {
@@ -265,8 +267,8 @@
 }
 
 .status-badge-repaid {
-  background-color: #e0e7ff;
-  color: #4338ca;
+  background-color: #dcfce7;
+  color: #166534;
 }
 
 .btn-view-loan {
@@ -378,17 +380,17 @@ body.dark-mode .btn-view-loan:hover {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .action-buttons {
     justify-content: flex-start;
   }
-  
+
   .section-header {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
   }
-  
+
   .loans-table th:nth-child(3),
   .loans-table td:nth-child(3),
   .loans-table th:nth-child(4),
@@ -402,7 +404,7 @@ body.dark-mode .btn-view-loan:hover {
   .loans-table td:nth-child(1) {
     display: none;
   }
-  
+
   .farmer-stats {
     grid-template-columns: 1fr;
   }

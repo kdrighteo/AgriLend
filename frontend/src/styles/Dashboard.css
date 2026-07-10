@@ -22,13 +22,13 @@
 
 .tab-button:hover {
   background-color: #f3f4f6;
-  color: #4f46e5;
+  color: var(--primary);
 }
 
 .tab-button.active {
   background-color: white;
-  color: #4f46e5;
-  border-top: 2px solid #4f46e5;
+  color: var(--primary);
+  border-top: 2px solid var(--primary);
   border-left: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;
   border-bottom: 1px solid white;
@@ -37,8 +37,8 @@
 
 .btn-view {
   display: inline-block;
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: #dcfce7;
+  color: #166534;
   border: none;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
@@ -49,7 +49,7 @@
 }
 
 .btn-view:hover {
-  background-color: #bae6fd;
+  background-color: #bbf7d0;
 }
 
 .stats-container {
@@ -62,7 +62,7 @@
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #4f46e5;
+  color: var(--primary);
   margin-top: 0.5rem;
 }
 .invitations-table {
@@ -262,9 +262,9 @@
 }
 
 .nav-link-active {
-  background-color: rgba(79, 70, 229, 0.2);
+  background-color: rgba(22, 101, 52, 0.2);
   color: white;
-  border-left-color: #4f46e5;
+  border-left-color: var(--primary);
 }
 
 .nav-icon {
@@ -345,7 +345,7 @@
 
 .search-box:focus-within {
   background-color: white;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 2px rgba(22, 101, 52, 0.2);
 }
 
 .search-icon {
@@ -500,8 +500,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(79, 70, 229, 0.1);
-  color: #4f46e5;
+  background-color: rgba(22, 101, 52, 0.1);
+  color: var(--primary);
 }
 
 .stat-value {
@@ -562,13 +562,13 @@
 .section-action {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4f46e5;
+  color: var(--primary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .section-action:hover {
-  color: #4338ca;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
@@ -679,7 +679,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  background-color: #4f46e5;
+  background-color: var(--primary);
   color: white;
   font-size: 0.875rem;
   font-weight: 500;
@@ -691,5 +691,5 @@
 }
 
 .empty-button:hover {
-  background-color: #4338ca;
+  background-color: var(--primary-dark);
 }

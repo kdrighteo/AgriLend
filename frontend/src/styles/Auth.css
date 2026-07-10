@@ -20,7 +20,7 @@
 }
 
 .auth-header {
-  background-color: #4338ca;
+  background-color: var(--primary);
   padding: 1.5rem 2rem;
   text-align: center;
 }
@@ -81,12 +81,12 @@
 }
 
 .form-input:hover {
-  border-color: #4f46e5;
+  border-color: var(--primary);
 }
 
 .form-input:focus {
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(22, 101, 52, 0.2);
 }
 
 .form-input::placeholder {
@@ -117,7 +117,7 @@
   justify-content: center;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: #4338ca;
+  background-color: var(--primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -129,7 +129,7 @@
 }
 
 .auth-button:hover {
-  background-color: #3730a3;
+  background-color: var(--primary-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -167,14 +167,14 @@
 }
 
 .auth-link {
-  color: #4338ca;
+  color: var(--primary);
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .auth-link:hover {
-  color: #312e81;
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
@@ -190,7 +190,7 @@
   border: 1px solid #d1d5db;
   border-radius: 4px;
   margin-right: 0.5rem;
-  accent-color: #4338ca;
+  accent-color: var(--primary);
 }
 
 .checkbox-label {
@@ -203,7 +203,7 @@
   .auth-card {
     max-width: 100%;
   }
-  
+
   .auth-body {
     padding: 1.5rem;
   }
