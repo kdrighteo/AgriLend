@@ -81,9 +81,12 @@ const Home: React.FC = () => {
           </div>
           <div className="hero-image">
             <img
-              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop"
+              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop&q=80"
               alt="Farmer in field"
               className="hero-img"
+              loading="eager"
+              width="800"
+              height="600"
             />
           </div>
         </div>
@@ -101,33 +104,45 @@ const Home: React.FC = () => {
           <div className="gallery-grid">
             <div className="gallery-item">
               <img
-                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&h=300&fit=crop"
+                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&h=300&fit=crop&q=80"
                 alt="Crop harvesting"
                 className="gallery-img"
+                loading="lazy"
+                width="400"
+                height="300"
               />
               <div className="gallery-caption">Modern Harvesting</div>
             </div>
             <div className="gallery-item">
               <img
-                src="https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?w=400&h=300&fit=crop"
+                src="https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?w=400&h=300&fit=crop&q=80"
                 alt="Farm equipment"
                 className="gallery-img"
+                loading="lazy"
+                width="400"
+                height="300"
               />
               <div className="gallery-caption">Advanced Equipment</div>
             </div>
             <div className="gallery-item">
               <img
-                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop"
+                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop&q=80"
                 alt="Irrigation system"
                 className="gallery-img"
+                loading="lazy"
+                width="400"
+                height="300"
               />
               <div className="gallery-caption">Smart Irrigation</div>
             </div>
             <div className="gallery-item">
               <img
-                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=300&fit=crop"
+                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=300&fit=crop&q=80"
                 alt="Greenhouse farming"
                 className="gallery-img"
+                loading="lazy"
+                width="400"
+                height="300"
               />
               <div className="gallery-caption">Greenhouse Technology</div>
             </div>
@@ -301,9 +316,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&q=80"
                   alt="John Mbeki"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
@@ -326,9 +344,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&q=80"
                   alt="Sarah Osei"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
@@ -349,9 +370,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&q=80"
                   alt="Emmanuel Adebayo"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
@@ -371,9 +395,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&q=80"
                   alt="Grace Kimani"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
@@ -395,9 +422,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&q=80"
                   alt="David Mensah"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
@@ -419,9 +449,12 @@ const Home: React.FC = () => {
             <div className="testimonial-card">
               <div className="testimonial-image">
                 <img
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&q=80"
                   alt="Fatima Ibrahim"
                   className="author-avatar"
+                  loading="lazy"
+                  width="100"
+                  height="100"
                 />
               </div>
               <div className="testimonial-content">
