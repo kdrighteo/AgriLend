@@ -81,10 +81,56 @@ const Home: React.FC = () => {
           </div>
           <div className="hero-image">
             <img
-              src="https://images.unsplash.com/photo-1628352087335-4f2a5b1c4c5e?w=800&h=600&fit=crop"
+              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop"
               alt="Farmer in field"
               className="hero-img"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Image Gallery Section */}
+      <div className="gallery-section">
+        <div className="gallery-container">
+          <div className="section-header">
+            <h2 className="section-heading">Farming in Action</h2>
+            <p className="section-intro">
+              See how our farmers are transforming agriculture across the region
+            </p>
+          </div>
+          <div className="gallery-grid">
+            <div className="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400&h=300&fit=crop"
+                alt="Crop harvesting"
+                className="gallery-img"
+              />
+              <div className="gallery-caption">Modern Harvesting</div>
+            </div>
+            <div className="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1592982537447-6f2a6a0c7c18?w=400&h=300&fit=crop"
+                alt="Farm equipment"
+                className="gallery-img"
+              />
+              <div className="gallery-caption">Advanced Equipment</div>
+            </div>
+            <div className="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=400&h=300&fit=crop"
+                alt="Irrigation system"
+                className="gallery-img"
+              />
+              <div className="gallery-caption">Smart Irrigation</div>
+            </div>
+            <div className="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=400&h=300&fit=crop"
+                alt="Greenhouse farming"
+                className="gallery-img"
+              />
+              <div className="gallery-caption">Greenhouse Technology</div>
+            </div>
           </div>
         </div>
       </div>
@@ -244,52 +290,152 @@ const Home: React.FC = () => {
       <div className="testimonials-section">
         <div className="testimonials-container">
           <div className="section-header">
-            <h2 className="section-heading">What Farmers Say</h2>
+            <h2 className="section-heading">Success Stories</h2>
             <p className="section-intro">
-              Hear from farmers who have transformed their operations with
-              AgricLend financing.
+              Real farmers, real results. See how AgricLend has transformed
+              agricultural businesses across the region.
             </p>
           </div>
 
           <div className="testimonials-grid">
             <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop"
+                  alt="John Mbeki"
+                  className="author-avatar"
+                />
+              </div>
               <div className="testimonial-content">
                 <p className="testimonial-text">
                   "AgricLend helped me purchase new equipment just before
                   planting season. The process was quick and the terms were
-                  perfect for my cash flow."
+                  perfect for my cash flow. My farm productivity increased by
+                  40%."
                 </p>
                 <div className="testimonial-author">
                   <div className="author-name">John Mbeki</div>
                   <div className="author-farm">Green Valley Farm, Kenya</div>
+                  <div className="author-achievement">
+                    Equipment Loan: $15,000
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop"
+                  alt="Sarah Osei"
+                  className="author-avatar"
+                />
+              </div>
               <div className="testimonial-content">
                 <p className="testimonial-text">
                   "As a young farmer, getting traditional financing was
                   impossible. AgricLend understood my potential and gave me the
-                  chance to grow."
+                  chance to grow. Now I employ 5 people and expanded my farm by
+                  10 acres."
                 </p>
                 <div className="testimonial-author">
                   <div className="author-name">Sarah Osei</div>
                   <div className="author-farm">Sunrise Acres, Ghana</div>
+                  <div className="author-achievement">Startup Loan: $8,000</div>
                 </div>
               </div>
             </div>
 
             <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+                  alt="Emmanuel Adebayo"
+                  className="author-avatar"
+                />
+              </div>
               <div className="testimonial-content">
                 <p className="testimonial-text">
                   "The seasonal repayment option is a game-changer. I can focus
                   on my harvest without worrying about monthly payments during
-                  lean periods."
+                  lean periods. My credit score has improved significantly."
                 </p>
                 <div className="testimonial-author">
                   <div className="author-name">Emmanuel Adebayo</div>
                   <div className="author-farm">Golden Harvest, Nigeria</div>
+                  <div className="author-achievement">Crop Loan: $25,000</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop"
+                  alt="Grace Kimani"
+                  className="author-avatar"
+                />
+              </div>
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "I used AgricLend to install a modern irrigation system. Water
+                  efficiency improved by 60% and my crop yields doubled. The
+                  investment paid for itself in just 8 months."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">Grace Kimani</div>
+                  <div className="author-farm">Highland Farms, Tanzania</div>
+                  <div className="author-achievement">
+                    Infrastructure Loan: $32,000
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+                  alt="David Mensah"
+                  className="author-avatar"
+                />
+              </div>
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "After years of struggling with traditional banks, AgricLend
+                  gave me the opportunity to expand my poultry business. I now
+                  supply eggs to 20 local schools and restaurants."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">David Mensah</div>
+                  <div className="author-farm">Mensah Poultry, Ghana</div>
+                  <div className="author-achievement">
+                    Business Expansion: $12,000
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-image">
+                <img
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                  alt="Fatima Ibrahim"
+                  className="author-avatar"
+                />
+              </div>
+              <div className="testimonial-content">
+                <p className="testimonial-text">
+                  "The credit building feature helped me establish a strong
+                  financial profile. After 3 successful loans, I qualified for
+                  larger financing to purchase additional farmland."
+                </p>
+                <div className="testimonial-author">
+                  <div className="author-name">Fatima Ibrahim</div>
+                  <div className="author-farm">Ibrahim Estates, Nigeria</div>
+                  <div className="author-achievement">
+                    Land Purchase: $50,000
+                  </div>
                 </div>
               </div>
             </div>
