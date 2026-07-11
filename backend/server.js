@@ -10,6 +10,8 @@ const taskRoutes = require("./routes/taskRoutes");
 const loanRoutes = require("./routes/loanRoutes");
 const invitationRoutes = require("./routes/invitationRoutes");
 const userRoutes = require("./routes/userRoutes");
+const fileRoutes = require("./routes/fileRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -62,8 +64,10 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/loans", loanRoutes);
+app.use("/api/files", fileRoutes);
 app.use("/api/invitations", invitationRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Serve static files from the React app (for production)
 if (process.env.NODE_ENV === "production") {

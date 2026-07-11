@@ -135,6 +135,40 @@ const loanSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
+  // Document uploads
+  documents: [
+    {
+      fileName: {
+        type: String,
+        required: true,
+      },
+      fileUrl: {
+        type: String,
+        required: true,
+      },
+      fileType: {
+        type: String,
+        required: true,
+      },
+      fileSize: {
+        type: Number,
+        required: true,
+      },
+      uploadedAt: {
+        type: Date,
+        default: Date.now,
+      },
+      uploadedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      documentType: {
+        type: String,
+        enum: ["identity", "farm_proof", "income_proof", "collateral", "other"],
+        default: "other",
+      },
+    },
+  ],
   // Timestamps
   submittedAt: {
     type: Date,
