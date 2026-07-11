@@ -1,116 +1,166 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const loanSchema = new mongoose.Schema({
   farmer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: "User",
+    required: true,
   },
   amount: {
     type: Number,
     required: true,
-    min: 100 // Minimum loan amount
+    min: 100, // Minimum loan amount
   },
   purpose: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   description: {
     type: String,
-    trim: true
+    trim: true,
   },
   termLength: {
     type: Number,
     required: true,
-    min: 1 // Minimum term in months
+    min: 1, // Minimum term in months
   },
   termUnit: {
     type: String,
-    enum: ['months', 'years'],
-    default: 'months'
+    enum: ["months", "years"],
+    default: "months",
   },
   collateral: {
     type: String,
-    trim: true
+    trim: true,
   },
   status: {
     type: String,
-    enum: ['pending', 'under-review', 'approved', 'rejected', 'funded', 'repaid'],
-    default: 'pending'
+    enum: [
+      "pending",
+      "under-review",
+      "approved",
+      "rejected",
+      "funded",
+      "repaid",
+    ],
+    default: "pending",
   },
   cropType: {
     type: String,
-    trim: true
+    trim: true,
   },
   farmingCycle: {
     type: String,
-    enum: ['seasonal', 'annual', 'perennial'],
-    default: 'seasonal'
+    enum: ["seasonal", "annual", "perennial"],
+    default: "seasonal",
   },
   estimatedYield: {
     type: Number,
-    min: 0
+    min: 0,
   },
   estimatedRevenue: {
     type: Number,
-    min: 0
+    min: 0,
   },
   revenueUnit: {
     type: String,
-    enum: ['per-acre', 'per-hectare', 'total'],
-    default: 'total'
+    enum: ["per-acre", "per-hectare", "total"],
+    default: "total",
   },
   // Admin review data
   adminNotes: {
     type: String,
-    trim: true
+    trim: true,
   },
   adminId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: "User",
   },
   riskScore: {
     type: Number,
     min: 0,
-    max: 100
+    max: 100,
   },
   approvedAmount: {
     type: Number,
-    min: 0
+    min: 0,
   },
   rejectReason: {
     type: String,
-    trim: true
+    trim: true,
   },
   // Bank assignment
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: "User",
   },
   assignedAt: {
-    type: Date
+    type: Date,
+  },
+  // Repayment tracking
+  repayments: [
+    {
+      amount: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      paymentDate: {
+        type: Date,
+        required: true,
+        default: Date.now,
+      },
+      paymentMethod: {
+        type: String,
+        enum: ["bank_transfer", "cash", "check", "mobile_money"],
+        default: "bank_transfer",
+      },
+      notes: {
+        type: String,
+        trim: true,
+      },
+      recordedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    },
+  ],
+  totalRepaid: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  remainingBalance: {
+    type: Number,
+    min: 0,
   },
   // Timestamps
   submittedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   reviewedAt: {
-    type: Date
+    type: Date,
+  },
+  fundedAt: {
+    type: Date,
+  },
+  fullyRepaidAt: {
+    type: Date,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // Update the updatedAt timestamp before each save
-loanSchema.pre('save', function(next) {
+loanSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-const Loan = mongoose.model('Loan', loanSchema);
+const Loan = mongoose.model("Loan", loanSchema);
 
 module.exports = Loan;

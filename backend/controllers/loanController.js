@@ -1,12 +1,15 @@
-const Loan = require('../models/Loan');
-const User = require('../models/User');
+const Loan = require("../models/Loan");
+const User = require("../models/User");
+const { sendLoanStatusEmail } = require("../services/emailService");
 
 // Submit a new loan application
 exports.submitLoanApplication = async (req, res) => {
   try {
     // Check if user is a farmer
-    if (req.user.role !== 'farmer') {
-      return res.status(403).json({ message: 'Only farmers can submit loan applications' });
+    if (req.user.role !== "farmer") {
+      return res
+        .status(403)
+        .json({ message: "Only farmers can submit loan applications" });
     }
 
     const {
@@ -20,7 +23,7 @@ exports.submitLoanApplication = async (req, res) => {
       farmingCycle,
       estimatedYield,
       estimatedRevenue,
-      revenueUnit
+      revenueUnit,
     } = req.body;
 
     // Create new loan application (explicitly set status to pending)
@@ -37,70 +40,73 @@ exports.submitLoanApplication = async (req, res) => {
       estimatedYield,
       estimatedRevenue,
       revenueUnit,
-      status: 'pending',  // Explicitly set status to pending for superadmin review
-      adminNotes: 'New application pending superadmin review'
+      status: "pending", // Explicitly set status to pending for superadmin review
+      adminNotes: "New application pending superadmin review",
     });
 
     // Save loan application to the database
     await loanApplication.save();
 
-    res.status(201).json({ 
-      message: 'Loan application submitted successfully and awaiting superadmin review',
-      loanApplication 
+    res.status(201).json({
+      message:
+        "Loan application submitted successfully and awaiting superadmin review",
+      loanApplication,
     });
   } catch (error) {
-    console.error('Submit loan application error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Submit loan application error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // Get all loan applications for a farmer
 exports.getFarmerLoans = async (req, res) => {
   try {
-    const loans = await Loan.find({ farmer: req.user._id }).sort({ submittedAt: -1 });
+    const loans = await Loan.find({ farmer: req.user._id }).sort({
+      submittedAt: -1,
+    });
     res.json(loans);
   } catch (error) {
-    console.error('Get farmer loans error:', error.message);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Get farmer loans error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // Get all loan applications (temporary debug version - allows all authenticated users)
 exports.getAllLoans = async (req, res) => {
   try {
-    console.log('===== GET ALL LOANS DEBUG =====');
-    console.log('User attempting to access loans:', {
-      userId: req.user ? req.user._id : 'unknown',
-      role: req.user ? req.user.role : 'unknown',
-      name: req.user ? req.user.name : 'unknown',
-      email: req.user ? req.user.email : 'unknown'
+    console.log("===== GET ALL LOANS DEBUG =====");
+    console.log("User attempting to access loans:", {
+      userId: req.user ? req.user._id : "unknown",
+      role: req.user ? req.user.role : "unknown",
+      name: req.user ? req.user.name : "unknown",
+      email: req.user ? req.user.email : "unknown",
     });
-    
+
     // TEMPORARY: Allow any authenticated user to access loans for debugging
     if (!req.user) {
-      console.log('DENIED: No authenticated user');
-      return res.status(401).json({ message: 'Authentication required' });
+      console.log("DENIED: No authenticated user");
+      return res.status(401).json({ message: "Authentication required" });
     }
-    
+
     // No filtering for debugging - show all loans to any authenticated user
     let query = {};
-    console.log('DEBUG MODE: Showing all loans to user', req.user.email);
+    console.log("DEBUG MODE: Showing all loans to user", req.user.email);
 
-    console.log('Query filter:', JSON.stringify(query));
-    
+    console.log("Query filter:", JSON.stringify(query));
+
     const loans = await Loan.find(query)
       .sort({ submittedAt: -1 })
-      .populate('farmer', 'name email farmName farmLocation')
-      .populate('assignedTo', 'name email institution');
-    
+      .populate("farmer", "name email farmName farmLocation")
+      .populate("assignedTo", "name email institution");
+
     console.log(`Found ${loans.length} loans matching criteria`);
-    console.log('===== END GET ALL LOANS DEBUG =====');
-    
+    console.log("===== END GET ALL LOANS DEBUG =====");
+
     res.json(loans);
   } catch (error) {
-    console.error('Get all loans error:', error.message);
+    console.error("Get all loans error:", error.message);
     console.error(error.stack);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -108,69 +114,79 @@ exports.getAllLoans = async (req, res) => {
 exports.getLoanById = async (req, res) => {
   try {
     const loan = await Loan.findById(req.params.id)
-      .populate('farmer', 'name email farmName farmLocation phoneNumber creditScore')
-      .populate('adminId', 'name email');
-    
+      .populate(
+        "farmer",
+        "name email farmName farmLocation phoneNumber creditScore",
+      )
+      .populate("adminId", "name email");
+
     // Check if loan exists
     if (!loan) {
-      return res.status(404).json({ message: 'Loan application not found' });
+      return res.status(404).json({ message: "Loan application not found" });
     }
 
     // Check if user is authorized to view this loan
-    if (req.user.role !== 'admin' && loan.farmer._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    if (
+      req.user.role !== "admin" &&
+      loan.farmer._id.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: "Unauthorized access" });
     }
 
     res.json(loan);
   } catch (error) {
-    console.error('Get loan by ID error:', error.message);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Loan application not found' });
+    console.error("Get loan by ID error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // Update loan status (superadmin for approval, admin for assigned loans)
 exports.updateLoanStatus = async (req, res) => {
   try {
-    const { status, adminNotes, riskScore, approvedAmount, rejectReason } = req.body;
+    const { status, adminNotes, riskScore, approvedAmount, rejectReason } =
+      req.body;
 
     // Verify user has appropriate permissions
-    if (req.user.role !== 'superadmin' && req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    if (req.user.role !== "superadmin" && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized access" });
     }
 
     let loan = await Loan.findById(req.params.id);
 
     // Check if loan exists
     if (!loan) {
-      return res.status(404).json({ message: 'Loan application not found' });
+      return res.status(404).json({ message: "Loan application not found" });
     }
 
     // Role-based permission checks for loan status updates
-    if (req.user.role === 'admin') {
+    if (req.user.role === "admin") {
       // Regular admins (banks) can only update loans assigned to them
-      if (!loan.assignedTo || loan.assignedTo.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ 
-          message: 'You can only update loans assigned to you by a superadmin' 
+      if (
+        !loan.assignedTo ||
+        loan.assignedTo.toString() !== req.user._id.toString()
+      ) {
+        return res.status(403).json({
+          message: "You can only update loans assigned to you by a superadmin",
         });
       }
-      
+
       // Banks can only mark loans as funded or update their notes
-      if (status && status !== 'funded') {
-        return res.status(403).json({ 
-          message: 'Banks can only mark loans as funded or update notes' 
+      if (status && status !== "funded") {
+        return res.status(403).json({
+          message: "Banks can only mark loans as funded or update notes",
         });
       }
     }
 
     // Superadmin-specific restrictions
-    if (req.user.role === 'superadmin') {
+    if (req.user.role === "superadmin") {
       // Superadmins handle initial review (pending → approved/rejected)
-      if (status === 'funded') {
-        return res.status(403).json({ 
-          message: 'Only banks can mark loans as funded' 
+      if (status === "funded") {
+        return res.status(403).json({
+          message: "Only banks can mark loans as funded",
         });
       }
     }
@@ -179,10 +195,13 @@ exports.updateLoanStatus = async (req, res) => {
     const loanFields = {};
     if (status) loanFields.status = status;
     if (adminNotes !== undefined) loanFields.adminNotes = adminNotes;
-    if (riskScore !== undefined && req.user.role === 'superadmin') loanFields.riskScore = riskScore;
-    if (approvedAmount !== undefined && req.user.role === 'superadmin') loanFields.approvedAmount = approvedAmount;
-    if (rejectReason !== undefined && req.user.role === 'superadmin') loanFields.rejectReason = rejectReason;
-    
+    if (riskScore !== undefined && req.user.role === "superadmin")
+      loanFields.riskScore = riskScore;
+    if (approvedAmount !== undefined && req.user.role === "superadmin")
+      loanFields.approvedAmount = approvedAmount;
+    if (rejectReason !== undefined && req.user.role === "superadmin")
+      loanFields.rejectReason = rejectReason;
+
     loanFields.adminId = req.user._id;
     loanFields.reviewedAt = Date.now();
 
@@ -190,38 +209,62 @@ exports.updateLoanStatus = async (req, res) => {
     loan = await Loan.findByIdAndUpdate(
       req.params.id,
       { $set: loanFields },
-      { new: true }
+      { new: true },
     )
-    .populate('farmer', 'name email farmName farmLocation phoneNumber creditScore')
-    .populate('adminId', 'name email')
-    .populate('assignedTo', 'name email institution');
+      .populate(
+        "farmer",
+        "name email farmName farmLocation phoneNumber creditScore",
+      )
+      .populate("adminId", "name email")
+      .populate("assignedTo", "name email institution");
 
     // Update farmer's credit score if loan is approved or rejected by superadmin
-    if (req.user.role === 'superadmin' && (status === 'approved' || status === 'rejected')) {
+    if (
+      req.user.role === "superadmin" &&
+      (status === "approved" || status === "rejected")
+    ) {
       // Simple credit score calculation
       // The actual implementation would be more sophisticated
       const farmer = await User.findById(loan.farmer._id);
-      
+
       // Logic to update credit score based on loan approval/rejection
-      if (status === 'approved') {
+      if (status === "approved") {
         // Increase credit score for approved loans
         farmer.previousLoans += 1;
         farmer.creditScore = calculateCreditScore(farmer);
-      } else if (status === 'rejected') {
+      } else if (status === "rejected") {
         // Slightly decrease credit score for rejected loans
         farmer.creditScore = Math.max(0, farmer.creditScore - 5);
       }
-      
+
       await farmer.save();
+    }
+
+    // Send email notification to farmer about status change
+    if (status && loan.farmer && loan.farmer.email) {
+      try {
+        await sendLoanStatusEmail(
+          loan.farmer.email,
+          loan.farmer.name,
+          loan,
+          status,
+        );
+        console.log(
+          `Email notification sent to ${loan.farmer.email} for loan status: ${status}`,
+        );
+      } catch (emailError) {
+        console.error("Failed to send email notification:", emailError);
+        // Don't fail the request if email fails
+      }
     }
 
     res.json(loan);
   } catch (error) {
-    console.error('Update loan status error:', error.message);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Loan application not found' });
+    console.error("Update loan status error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -229,23 +272,23 @@ exports.updateLoanStatus = async (req, res) => {
 const calculateCreditScore = (farmer) => {
   // Initial score based on farming experience (max 30 points)
   let score = Math.min(30, farmer.farmingExperience * 3);
-  
+
   // Add points for loan repayment history (max 50 points)
   if (farmer.previousLoans > 0) {
     const repaymentRatio = farmer.loansRepaid / farmer.previousLoans;
     score += Math.round(repaymentRatio * 50);
   }
-  
+
   // Add points for farm size (max 10 points)
   if (farmer.farmSize) {
     score += Math.min(10, farmer.farmSize / 10); // 1 point per 10 acres/hectares, max 10 points
   }
-  
+
   // Add points for crop diversity (max 10 points)
   if (farmer.mainCrops && farmer.mainCrops.length > 0) {
     score += Math.min(10, farmer.mainCrops.length * 2);
   }
-  
+
   // Ensure score is between 0 and 100
   return Math.min(100, Math.max(0, Math.round(score)));
 };
@@ -254,32 +297,37 @@ const calculateCreditScore = (farmer) => {
 exports.markLoanRepaid = async (req, res) => {
   try {
     // Only admins can mark loans as repaid
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized access" });
     }
 
-    let loan = await Loan.findById(req.params.id).populate('farmer', 'name email creditScore');
+    let loan = await Loan.findById(req.params.id).populate(
+      "farmer",
+      "name email creditScore",
+    );
 
     // Check if loan exists
     if (!loan) {
-      return res.status(404).json({ message: 'Loan application not found' });
+      return res.status(404).json({ message: "Loan application not found" });
     }
 
     // Ensure loan was approved before marking as repaid
-    if (loan.status !== 'approved' && loan.status !== 'funded') {
-      return res.status(400).json({ message: 'Only approved or funded loans can be marked as repaid' });
+    if (loan.status !== "approved" && loan.status !== "funded") {
+      return res.status(400).json({
+        message: "Only approved or funded loans can be marked as repaid",
+      });
     }
 
     // Update loan status to repaid
     loan = await Loan.findByIdAndUpdate(
       req.params.id,
-      { 
-        $set: { 
-          status: 'repaid',
-          updatedAt: Date.now() 
-        } 
+      {
+        $set: {
+          status: "repaid",
+          updatedAt: Date.now(),
+        },
       },
-      { new: true }
+      { new: true },
     );
 
     // Update farmer's credit score and loan repayment history
@@ -290,11 +338,11 @@ exports.markLoanRepaid = async (req, res) => {
 
     res.json(loan);
   } catch (error) {
-    console.error('Mark loan repaid error:', error.message);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Loan application not found' });
+    console.error("Mark loan repaid error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -302,88 +350,278 @@ exports.markLoanRepaid = async (req, res) => {
 exports.assignLoan = async (req, res) => {
   try {
     // Only superadmin can assign loans to banks
-    if (req.user.role !== 'superadmin') {
-      return res.status(403).json({ message: 'Not authorized to assign loans' });
+    if (req.user.role !== "superadmin") {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to assign loans" });
     }
 
     const { bankId } = req.body;
     if (!bankId) {
-      return res.status(400).json({ message: 'Bank ID is required' });
+      return res.status(400).json({ message: "Bank ID is required" });
     }
 
     // Check if bank exists and is an admin
-    const bank = await User.findOne({ _id: bankId, role: 'admin' });
+    const bank = await User.findOne({ _id: bankId, role: "admin" });
     if (!bank) {
-      return res.status(404).json({ message: 'Bank not found' });
+      return res.status(404).json({ message: "Bank not found" });
     }
 
     let loan = await Loan.findById(req.params.id);
     // Check if loan exists
     if (!loan) {
-      return res.status(404).json({ message: 'Loan not found' });
+      return res.status(404).json({ message: "Loan not found" });
     }
 
     // Update loan with assignment
     loan = await Loan.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         assignedTo: bankId,
-        assignedAt: Date.now()
+        assignedAt: Date.now(),
       },
-      { new: true }
+      { new: true },
     )
-    .populate('farmer', 'name email farmName')
-    .populate('assignedTo', 'name email institution');
+      .populate("farmer", "name email farmName")
+      .populate("assignedTo", "name email institution");
 
     res.json(loan);
   } catch (error) {
-    console.error('Assign loan error:', error.message);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Invalid ID' });
+    console.error("Assign loan error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Invalid ID" });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// Mark a loan as funded (admin only)
-exports.markLoanFunded = async (req, res) => {
+// Record a loan repayment (admin only)
+exports.recordRepayment = async (req, res) => {
   try {
-    // Only admins can mark loans as funded
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Unauthorized access' });
+    // Only admins can record repayments
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized access" });
     }
 
-    let loan = await Loan.findById(req.params.id).populate('farmer', 'name email creditScore');
+    const { amount, paymentMethod, notes } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Payment amount must be greater than 0" });
+    }
+
+    let loan = await Loan.findById(req.params.id).populate(
+      "farmer",
+      "name email",
+    );
 
     // Check if loan exists
     if (!loan) {
-      return res.status(404).json({ message: 'Loan application not found' });
+      return res.status(404).json({ message: "Loan application not found" });
+    }
+
+    // Ensure loan is funded before recording repayments
+    if (loan.status !== "funded" && loan.status !== "approved") {
+      return res
+        .status(400)
+        .json({
+          message: "Only funded or approved loans can accept repayments",
+        });
+    }
+
+    // Calculate remaining balance
+    const loanAmount = loan.approvedAmount || loan.amount;
+    const currentTotalRepaid = loan.totalRepaid || 0;
+    const newTotalRepaid = currentTotalRepaid + amount;
+    const remainingBalance = loanAmount - newTotalRepaid;
+
+    // Check if payment exceeds remaining balance
+    if (newTotalRepaid > loanAmount) {
+      return res.status(400).json({
+        message: "Payment amount exceeds remaining balance",
+        remainingBalance: loanAmount - currentTotalRepaid,
+      });
+    }
+
+    // Add repayment record
+    const repayment = {
+      amount,
+      paymentDate: new Date(),
+      paymentMethod: paymentMethod || "bank_transfer",
+      notes,
+      recordedBy: req.user._id,
+    };
+
+    // Update loan
+    loan = await Loan.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: { repayments: repayment },
+        $set: {
+          totalRepaid: newTotalRepaid,
+          remainingBalance: remainingBalance,
+          updatedAt: Date.now(),
+        },
+      },
+      { new: true },
+    )
+      .populate("farmer", "name email")
+      .populate("adminId", "name email")
+      .populate("repayments.recordedBy", "name email")
+      .populate("assignedTo", "name email institution");
+
+    // Check if loan is fully repaid
+    if (remainingBalance <= 0) {
+      loan = await Loan.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            status: "repaid",
+            fullyRepaidAt: Date.now(),
+          },
+        },
+        { new: true },
+      )
+        .populate("farmer", "name email creditScore")
+        .populate("adminId", "name email")
+        .populate("repayments.recordedBy", "name email")
+        .populate("assignedTo", "name email institution");
+
+      // Update farmer's credit score
+      const farmer = await User.findById(loan.farmer._id);
+      farmer.loansRepaid += 1;
+      farmer.creditScore = calculateCreditScore(farmer);
+      await farmer.save();
+
+      // Send email notification for full repayment
+      try {
+        await sendLoanStatusEmail(
+          loan.farmer.email,
+          loan.farmer.name,
+          loan,
+          "repaid",
+        );
+        console.log(`Full repayment email sent to ${loan.farmer.email}`);
+      } catch (emailError) {
+        console.error("Failed to send repayment email:", emailError);
+      }
+    }
+
+    res.json(loan);
+  } catch (error) {
+    console.error("Record repayment error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get loan repayment history
+exports.getRepaymentHistory = async (req, res) => {
+  try {
+    const loan = await Loan.findById(req.params.id)
+      .populate("farmer", "name email")
+      .populate("repayments.recordedBy", "name email institution");
+
+    // Check if loan exists
+    if (!loan) {
+      return res.status(404).json({ message: "Loan application not found" });
+    }
+
+    // Check if user is authorized to view this loan
+    if (
+      req.user.role !== "admin" &&
+      loan.farmer._id.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
+
+    // Calculate repayment summary
+    const loanAmount = loan.approvedAmount || loan.amount;
+    const totalRepaid = loan.totalRepaid || 0;
+    const remainingBalance =
+      loan.remainingBalance !== undefined
+        ? loan.remainingBalance
+        : loanAmount - totalRepaid;
+    const repaymentPercentage =
+      loanAmount > 0 ? ((totalRepaid / loanAmount) * 100).toFixed(2) : 0;
+
+    res.json({
+      loan: {
+        id: loan._id,
+        amount: loanAmount,
+        purpose: loan.purpose,
+        status: loan.status,
+        fundedAt: loan.fundedAt,
+        fullyRepaidAt: loan.fullyRepaidAt,
+      },
+      repaymentSummary: {
+        totalRepaid,
+        remainingBalance,
+        repaymentPercentage: parseFloat(repaymentPercentage),
+        totalPayments: loan.repayments.length,
+      },
+      repayments: loan.repayments.sort(
+        (a, b) => new Date(b.paymentDate) - new Date(a.paymentDate),
+      ),
+    });
+  } catch (error) {
+    console.error("Get repayment history error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.markLoanFunded = async (req, res) => {
+  try {
+    // Only admins can mark loans as funded
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
+
+    let loan = await Loan.findById(req.params.id).populate(
+      "farmer",
+      "name email creditScore",
+    );
+
+    // Check if loan exists
+    if (!loan) {
+      return res.status(404).json({ message: "Loan application not found" });
     }
 
     // Ensure loan was approved before marking as funded
-    if (loan.status !== 'approved') {
-      return res.status(400).json({ message: 'Only approved loans can be marked as funded' });
+    if (loan.status !== "approved") {
+      return res
+        .status(400)
+        .json({ message: "Only approved loans can be marked as funded" });
     }
 
     // Update loan status to funded
     loan = await Loan.findByIdAndUpdate(
       req.params.id,
-      { 
-        $set: { 
-          status: 'funded',
-          updatedAt: Date.now() 
-        } 
+      {
+        $set: {
+          status: "funded",
+          updatedAt: Date.now(),
+        },
       },
-      { new: true }
-    ).populate('farmer', 'name email farmName farmLocation phoneNumber creditScore')
-     .populate('adminId', 'name email');
+      { new: true },
+    )
+      .populate(
+        "farmer",
+        "name email farmName farmLocation phoneNumber creditScore",
+      )
+      .populate("adminId", "name email");
 
     res.json(loan);
   } catch (error) {
-    console.error('Mark loan funded error:', error.message);
-    if (error.kind === 'ObjectId') {
-      return res.status(404).json({ message: 'Loan application not found' });
+    console.error("Mark loan funded error:", error.message);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ message: "Loan application not found" });
     }
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
