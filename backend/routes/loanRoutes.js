@@ -53,14 +53,4 @@ router.put("/:id/funded", auth, loanController.markLoanFunded);
 // @access  Private (superadmin only)
 router.put("/:id/assign", auth, loanController.assignLoan);
 
-// @route   POST /api/loans/:id/repayment
-// @desc    Record a loan repayment
-// @access  Private (Admin only)
-router.post("/:id/repayment", auth, loanController.recordRepayment);
-
-// @route   GET /api/loans/:id/repayment-history
-// @desc    Get loan repayment history
-// @access  Private (Admin or loan owner)
-router.get("/:id/repayment-history", auth, loanController.getRepaymentHistory);
-
 module.exports = router;
