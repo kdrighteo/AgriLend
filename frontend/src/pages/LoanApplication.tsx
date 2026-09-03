@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import "../styles/LoanApplication.css";
 import API_BASE_URL from "../config/api";
+import DocumentUpload from "../components/DocumentUpload";
 
 interface LoanFormData {
   amount: string;
@@ -299,6 +300,8 @@ const LoanApplication: React.FC = () => {
                 </span>
               </div>
             </div>
+
+            <DocumentUpload loanId={submittedLoan._id} />
 
             <button
               onClick={() => navigate("/dashboard")}

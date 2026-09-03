@@ -1,0 +1,40 @@
+/* Tools Page Styles */
+
+.tools-container {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.tools-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.tools-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 0.5rem;
+}
+
+.tools-header p {
+  color: var(--gray);
+  font-size: 1.125rem;
+}
+
+.tools-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+@media (max-width: 768px) {
+  .tools-header h1 {
+    font-size: 2rem;
+  }
+  
+  .tools-header p {
+    font-size: 1rem;
+  }
+}

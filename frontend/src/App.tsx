@@ -21,18 +21,22 @@ import LoanApplication from "./pages/LoanApplication";
 import LoanDetail from "./pages/LoanDetail";
 import Debug from "./pages/Debug"; // Import our new enhanced Debug page
 import FixPendingLoans from "./pages/FixPendingLoans"; // Import the loan review component
+import Tools from "./pages/Tools";
 
 // Components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
 import ErrorBoundary from "./components/ErrorBoundary"; // Import ErrorBoundary component
+import NotificationCenter from "./components/NotificationCenter";
 
 // Context
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
+  const [isNotificationOpen, setIsNotificationOpen] = React.useState(false);
+
   return (
     <ErrorBoundary>
       <Router>
@@ -40,6 +44,10 @@ function App() {
           <ThemeProvider>
             <div className="app-container">
               <Header />
+              <NotificationCenter
+                isOpen={isNotificationOpen}
+                onClose={() => setIsNotificationOpen(false)}
+              />
               <main className="main-content">
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -87,6 +95,14 @@ function App() {
                       element={
                         <ErrorBoundary>
                           <LoanApplication />
+                        </ErrorBoundary>
+                      }
+                    />
+                    <Route
+                      path="/tools"
+                      element={
+                        <ErrorBoundary>
+                          <Tools />
                         </ErrorBoundary>
                       }
                     />
